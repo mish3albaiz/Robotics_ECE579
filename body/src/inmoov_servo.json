@@ -87,7 +87,7 @@
     },
     {
         "id": 6,
-        "body_part": "right_shoulder_flexion",
+        "body_part": "right_elbow",
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 125,
@@ -100,7 +100,7 @@
     },
     {
         "id": 7,
-        "body_part": "right_shoulder_abduction",
+        "body_part": "right_shoulder_lift_out",
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 165,
@@ -113,7 +113,7 @@
     },
     {
         "id": 8,
-        "body_part": "right_shoulder_rotation_x",
+        "body_part": "right_shoulder_lift_front",
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 272,
@@ -126,7 +126,7 @@
     },
     {
         "id": 9,
-        "body_part": "right_shoulder_rotation_y",
+        "body_part": "right_arm_rotate",
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 260,
@@ -141,7 +141,7 @@
     
     {
         "id": 6,
-        "body_part": "left_shoulder_flexion",
+        "body_part": "left_elbow",
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 250,
@@ -154,7 +154,7 @@
     },
     {
         "id": 7,
-        "body_part": "left_shoulder_abduction",
+        "body_part": "left_shoulder_lift_out",
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 250,
@@ -167,7 +167,7 @@
     },
     {
         "id": 9,
-        "body_part": "left_shoulder_rotation_x",
+        "body_part": "left_shoulder_lift_front",
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 330,
@@ -180,7 +180,7 @@
     },
     {
         "id": 8,
-        "body_part": "left_shoulder_rotation_y",
+        "body_part": "left_arm_rotate",
         "min_degree": 90,
         "max_degree": -90,
         "min_pulse": 306,

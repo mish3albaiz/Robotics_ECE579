@@ -69,20 +69,20 @@ class Inmoov(object):
         self.left_mid = self.find_servo_by_name("left_mid")
         self.left_index = self.find_servo_by_name("left_index")
         self.left_thumb = self.find_servo_by_name("left_thumb")
-        self.left_shoulder_flexion = self.find_servo_by_name("left_shoulder_flexion")
-        self.left_shoulder_abduction = self.find_servo_by_name("left_shoulder_abduction")
-        self.left_shoulder_rotation_x = self.find_servo_by_name("left_shoulder_rotation_x")
-        self.left_shoulder_rotation_y = self.find_servo_by_name("left_shoulder_rotation_y")
+        self.left_elbow = self.find_servo_by_name("left_elbow")
+        self.left_shoulder_lift_out = self.find_servo_by_name("left_shoulder_lift_out")
+        self.left_shoulder_lift_front = self.find_servo_by_name("left_shoulder_lift_front")
+        self.left_arm_rotate = self.find_servo_by_name("left_arm_rotate")
         self.right_wrist_serv = self.find_servo_by_name("right_wrist")
         self.right_pinky = self.find_servo_by_name("right_pinky")
         self.right_ring = self.find_servo_by_name("right_ring")
         self.right_mid = self.find_servo_by_name("right_mid")
         self.right_index = self.find_servo_by_name("right_index")
         self.right_thumb = self.find_servo_by_name("right_thumb")
-        self.right_shoulder_flexion = self.find_servo_by_name("right_shoulder_flexion")
-        self.right_shoulder_abduction = self.find_servo_by_name("right_shoulder_abduction")
-        self.right_shoulder_rotation_x = self.find_servo_by_name("right_shoulder_rotation_x")
-        self.right_shoulder_rotation_y = self.find_servo_by_name("right_shoulder_rotation_y")
+        self.right_elbow = self.find_servo_by_name("right_elbow")
+        self.right_shoulder_lift_out = self.find_servo_by_name("right_shoulder_lift_out")
+        self.right_shoulder_lift_front = self.find_servo_by_name("right_shoulder_lift_front")
+        self.right_arm_rotate = self.find_servo_by_name("right_arm_rotate")
 
         ####################################
         # hierarchical structures arranging the same servos listed above
@@ -105,7 +105,7 @@ class Inmoov(object):
         # left_wrist = left_wrist
         # left_hand = left_pinky + left_ring + left_mid + left_index + left_thumb
         # left_forearm = left_hand + left_wrist
-        # left_shoulder = left_shoulder_flexion + left_shoulder_abduction + left_shoulder_rotation_x + left_shoulder_rotation_y
+        # left_shoulder = left_elbow + left_shoulder_lift_out + left_shoulder_lift_front + left_arm_rotate
         # left_arm = left_forearm + left_shoulder
         self.left_wrist = Wrist(self.left_wrist_serv)
         self.left_hand = Hand(
@@ -117,10 +117,10 @@ class Inmoov(object):
         )
         self.left_forearm = Forearm(self.left_hand, self.left_wrist)
         self.left_shoulder = Shoulder(
-            self.left_shoulder_flexion,
-            self.left_shoulder_abduction,
-            self.left_shoulder_rotation_x,
-            self.left_shoulder_rotation_y)
+            self.left_elbow,
+            self.left_shoulder_lift_out,
+            self.left_shoulder_lift_front,
+            self.left_arm_rotate)
 
         self.left_arm = Arm(self.left_forearm, self.left_shoulder)
 
@@ -129,7 +129,7 @@ class Inmoov(object):
         # right_wrist = right_wrist
         # right_hand = right_pinky + right_ring + right_mid + right_index + right_thumb
         # right_forearm = right_hand + right_wrist
-        # right_shoulder = right_shoulder_flexion + right_shoulder_abduction + right_shoulder_rotation_x + right_shoulder_rotation_y
+        # right_shoulder = right_elbow + right_shoulder_lift_out + right_shoulder_lift_front + right_arm_rotate
         # right_arm = right_forearm + right_shoulder
         self.right_wrist = Wrist(self.right_wrist_serv)
         self.right_hand = Hand(
@@ -141,10 +141,10 @@ class Inmoov(object):
         )
         self.right_forearm = Forearm(self.right_hand, self.right_wrist)
         self.right_shoulder = Shoulder(
-            self.right_shoulder_flexion,
-            self.right_shoulder_abduction,
-            self.right_shoulder_rotation_x,
-            self.right_shoulder_rotation_y)
+            self.right_elbow,
+            self.right_shoulder_lift_out,
+            self.right_shoulder_lift_front,
+            self.right_arm_rotate)
 
         self.right_arm = Arm(self.right_forearm, self.right_shoulder)
 

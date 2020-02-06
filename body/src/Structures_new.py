@@ -18,7 +18,7 @@ import time
 # right_wrist = right_wrist
 # right_hand = right_pinky + right_ring + right_mid + right_index + right_thumb
 # right_forearm = right_hand + right_wrist
-# right_shoulder = right_shoulder_flexion + right_shoulder_abduction + right_shoulder_rotation_x + right_shoulder_rotation_y
+# right_shoulder = right_elbow + right_shoulder_lift_out + right_shoulder_lift_front + right_arm_rotate
 # right_arm = right_forearm + right_shoulder
 
 
