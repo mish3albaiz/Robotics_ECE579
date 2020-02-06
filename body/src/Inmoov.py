@@ -23,8 +23,8 @@ does .off() actually cut power, or does it drive the servo to position 0? must t
 
 Servo.py defines a servo object, needs work but its' just fine
     todo: add "current position" member and threading system
-all calibration & channel data is in inmoov_servo.json, odd storage method but no reason to change it yet
-Config.py inits the PWM hats, handles the locking, & defines "set_pwm()"
+all calibration & channel_id data is in inmoov_servo.json, odd storage method but no reason to change it yet
+Pwm_Interface.py inits the PWM hats, handles the locking, & defines "set_pwm()"
     todo: rename, change to use "default/builtin" adafruit libs instead of these local things
 body.py is a top-level thing that sets up some ROS stuff
 Structures_new.py just puts all the ways of grouping servos into one file, they dont add anything except hierarchy
@@ -96,7 +96,7 @@ class Inmoov(object):
         self.torso = Torso(self.left_torso, self.right_torso)
 
         # left arm
-        # better hierarchy: arm = hand(5) + wrist(1) + elbow(1) + shoulder(4?)
+        # better hierarchy: arm = hand(5) + wrist(1) + elbow(1) + armtwist(1) + shoulder(2)
         # flexion = elbow
         # abduction = ?forward?
         # rotation_x = "lifts arm up"

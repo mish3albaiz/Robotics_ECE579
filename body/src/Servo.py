@@ -35,7 +35,7 @@ def linear_map(x_in_val, x1, x2, y1, y2):
 class Servo(object):
     """
     Servo stores the following values:
-        channel: The channel the Servo is connected to
+        channel_id: The channel the Servo is connected to
         min_pulse: The minimum pulse the Servo allows
         max_pulse: The maximum pulse the Servo allows
         min_degree: The minimum degree the Servo can rotate to
@@ -60,7 +60,7 @@ class Servo(object):
         # servo IDs start from 0, and because there are only 16 channels on a hat, the actual channel is ID mod 16.
         # also, the hat number is ID // 16 (round-down division).
         # Example: ID=20, 20 % 16 = 4, 20 // 16 = 1. Channel 4, hat 1.
-        self.channel = int(servo_id % 16)
+        self.channel_id = int(servo_id % 16)
         self.shield_id = int(servo_id // 16)
         self.min_pulse = min_pulse
         self.max_pulse = max_pulse
@@ -116,11 +116,11 @@ class Servo(object):
         self.off()
         
     def __str__(self) -> str:
-        # self.name, self.id, self.channel, self.shield_id, self.min_pulse, self.max_pulse, self.min_degree, self.max_degree, self.default_angle, self.disabled
+        # self.name, self.id, self.channel_id, self.shield_id, self.min_pulse, self.max_pulse, self.min_degree, self.max_degree, self.default_angle, self.disabled
         # curr_angle, curr_pwm, curr_on
-        s = "name={}, servo_id={}, channel={}, shield_id={}, min_pulse={}, max_pulse={}, min_degree={}, max_degree={}, default_angle={}, disabled={}\ncurr_angle={}, curr_pwm={}, curr_on={}"
-        return s.format(self.name, self.servo_id, self.channel, self.shield_id, self.min_pulse, self.max_pulse,
-                       self.min_degree, self.max_degree, self.default_angle, self.disabled,
+        s = "name={}, servo_id={}, channel_id={}, shield_id={}, min_pulse={}, max_pulse={}, min_degree={}, max_degree={}, default_angle={}, disabled={}\ncurr_angle={}, curr_pwm={}, curr_on={}"
+        return s.format(self.name, self.servo_id, self.channel_id, self.shield_id, self.min_pulse, self.max_pulse,
+                        self.min_degree, self.max_degree, self.default_angle, self.disabled,
                         self.curr_angle, self.curr_pwm, self.curr_on)
 
 
@@ -194,7 +194,7 @@ class Servo(object):
             self.curr_on = True
             self.curr_angle = degree
             self.curr_pwm = pulse
-            set_pwm(self.shield_id, self.channel, pulse)
+            set_pwm(self.shield_id, self.channel_id, pulse)
 
     def initialize(self):
         """ Move servo to defult position """
@@ -212,7 +212,7 @@ class Servo(object):
                 self.curr_on = False
                 self.curr_angle = None
                 self.curr_pwm = 0
-                set_pwm(self.shield_id, self.channel, 0)
+                set_pwm(self.shield_id, self.channel_id, 0)
         except ValueError as exception:
             print(exception)
             print("Could not turn off {}").format(self.name)
