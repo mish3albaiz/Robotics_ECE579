@@ -5,7 +5,7 @@ Authors:
     Brett Creeley
     Matty Baba Allos
 """
-from Config import set_pwm
+from Pwm_Interface import set_pwm
 import warnings
 import threading
 import frame_thread as ft

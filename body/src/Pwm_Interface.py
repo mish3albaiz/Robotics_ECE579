@@ -6,7 +6,6 @@ Authors:
     Brett Creeley
     Matty Baba Allos
 """
-# TODO: rename this file
 from Adafruit_PWM_Servo_Driver import PWM
 import threading
 
