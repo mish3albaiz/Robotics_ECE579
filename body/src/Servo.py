@@ -56,9 +56,6 @@ class Servo(object):
                  ):
         
         self.disabled = disabled
-        if self.disabled:
-            servo_id = 47
-            print("Warning: servo '%s' is disabled" % name)
         self.servo_id = servo_id
         # servo IDs start from 0, and because there are only 16 channels on a hat, the actual channel is ID mod 16.
         # also, the hat number is ID // 16 (round-down division).
@@ -72,8 +69,12 @@ class Servo(object):
         self.default_angle = default_angle
         self.name = name
         # sanity checking, in case of typos in the config json
-        if not self.disabled:
+        if self.disabled:
+            print("Warning: servo '%s' is disabled" % name)
+        else:
             # currently we do not prevent either degrees or pwm from being upside-down, this might change in future
+            # assert min_pulse <= max_pulse
+            # assert min_degree <= max_degree
             assert 1 <= max_pulse <= 4096
             assert 1 <= min_pulse <= 4096
             assert 0 <= servo_id <= 50
@@ -117,8 +118,8 @@ class Servo(object):
     def __str__(self) -> str:
         # self.name, self.id, self.channel, self.shield_id, self.min_pulse, self.max_pulse, self.min_degree, self.max_degree, self.default_angle, self.disabled
         # curr_angle, curr_pwm, curr_on
-        s = "name={}, id={}, channel={}, shield_id={}, min_pulse={}, max_pulse={}, min_degree={}, max_degree={}, default_angle={}, disabled={}\ncurr_angle={}, curr_pwm={}, curr_on={}"
-        return s.format(self.name, self.id, self.channel, self.shield_id, self.min_pulse, self.max_pulse,
+        s = "name={}, servo_id={}, channel={}, shield_id={}, min_pulse={}, max_pulse={}, min_degree={}, max_degree={}, default_angle={}, disabled={}\ncurr_angle={}, curr_pwm={}, curr_on={}"
+        return s.format(self.name, self.servo_id, self.channel, self.shield_id, self.min_pulse, self.max_pulse,
                        self.min_degree, self.max_degree, self.default_angle, self.disabled,
                         self.curr_angle, self.curr_pwm, self.curr_on)
 
@@ -158,7 +159,7 @@ class Servo(object):
             # floats are always copied, not referenced
             curr = self.curr_angle
 
-        if self.id == DEBUG_SERVO_ID:
+        if self.servo_id == DEBUG_SERVO_ID:
             print("servo_%s: interp from deg %d to %d over %f" % (self.name, curr, dest, durr))
         
         # run interpolation
@@ -168,7 +169,7 @@ class Servo(object):
         with self._frame_queue_lock:
             # concatenate two lists with +
             self.frame_queue = self.frame_queue + interp_list
-            if self.id == DEBUG_SERVO_ID:
+            if self.servo_id == DEBUG_SERVO_ID:
                 print("servo_%s: add %d frames, new length %d" % (self.name, len(interp_list), len(self.frame_queue)))
     
         with self._state_flag_lock:
@@ -183,6 +184,10 @@ class Servo(object):
         # called by both threading and non-threading approaches
         # convert to pwm
         # with lock, set pwm
+        
+        if self.disabled:
+            return
+        
         pulse = self.degrees_to_pulse(degree)
 
         with self._curr_state_lock:
@@ -198,7 +203,7 @@ class Servo(object):
 
     def off(self):
         """ Rotate to the specified degrees """
-        # TODO: i'm not conviced setting this to 0 is a good idea, ever... does it drive to zero-position or cut power?
+        # setting PWM to 0 cuts power to the servo and makes it malleable
         
         # abort so it doesn't wake up after turning off until i explicitly tell it to wake up
         self.abort()

@@ -9,19 +9,10 @@ Authors:
 import json
 import time
 from Servo import Servo
-# from _Arm import Arm
-# from _Head import Head
-# from _Hand import Hand
-# from _Forearm import Forearm
-# from _Wrist import Wrist
-# from _Finger import Finger
-# from _Shoulder import Shoulder
-# from _Torso import Torso
 from Structures_new import *
 
 # all of the config data (min angle, max angle, channel, etc) is stored in this JSON file
 INMOOV_FILE = "inmoov_servo.json"
-servos = []
 
 
 '''
@@ -43,36 +34,6 @@ Structures_new.py just puts all the ways of grouping servos into one file, they 
 # TODO: verify right wrist servo works
 
 
-def parse(obj):
-    # build a Servo object out of the data read from the JSON
-    # then append it into the global "servos" list
-    if "body_part" not in obj:
-        raise Exception("Could not parse JSON object")
-
-    if "disabled" in obj and obj["disabled"] == True:
-        d = True
-    else:
-        d = False
-        
-    servos.append(Servo(
-        obj["id"],
-        obj["min_pulse"],
-        obj["max_pulse"],
-        obj["min_degree"],
-        obj["max_degree"],
-        obj["default_angle"],
-        obj["body_part"],
-        disabled=d
-        ))
-
-
-def find_servo_in_list(name):
-    # in the global list "servos" find the Servo obj with x.name matching given name
-    for i in servos:
-        if name == i.name:
-            return i
-    print("ERR: FAIL TO FIND")
-    return None
 
 class Inmoov(object):
     """
@@ -85,42 +46,43 @@ class Inmoov(object):
         """
         print("begin InMoov init")
         
+        self.all_servos = []
+        
         # open the json config file
         # run the "parse" function on each object it reads from file, therefore filling the "servos" list
         with open(INMOOV_FILE) as json_file:
-            json.load(json_file,object_hook=parse)
+            json.load(json_file,object_hook=self.parse)
             
-        self.all_servos = servos
         self.all_servos.sort(key=lambda x: x.servo_id)
         
         ####################################
         # store the actual servo objects as Inmoov member in addition to the bodypart structure hierarchy members
         # 25 total servos
-        self.head_x = find_servo_in_list("head_x")
-        self.head_y = find_servo_in_list("head_y")
-        self.jaw = find_servo_in_list("jaw")
-        self.left_torso = find_servo_in_list("left_torso")
-        self.right_torso = find_servo_in_list("right_torso")
-        self.left_wrist_serv = find_servo_in_list("left_wrist")
-        self.left_pinky = find_servo_in_list("left_pinky")
-        self.left_ring = find_servo_in_list("left_ring")
-        self.left_mid = find_servo_in_list("left_mid")
-        self.left_index = find_servo_in_list("left_index")
-        self.left_thumb = find_servo_in_list("left_thumb")
-        self.left_shoulder_flexion = find_servo_in_list("left_shoulder_flexion")
-        self.left_shoulder_abduction = find_servo_in_list("left_shoulder_abduction")
-        self.left_shoulder_rotation_x = find_servo_in_list("left_shoulder_rotation_x")
-        self.left_shoulder_rotation_y = find_servo_in_list("left_shoulder_rotation_y")
-        self.right_wrist_serv = find_servo_in_list("right_wrist")
-        self.right_pinky = find_servo_in_list("right_pinky")
-        self.right_ring = find_servo_in_list("right_ring")
-        self.right_mid = find_servo_in_list("right_mid")
-        self.right_index = find_servo_in_list("right_index")
-        self.right_thumb = find_servo_in_list("right_thumb")
-        self.right_shoulder_flexion = find_servo_in_list("right_shoulder_flexion")
-        self.right_shoulder_abduction = find_servo_in_list("right_shoulder_abduction")
-        self.right_shoulder_rotation_x = find_servo_in_list("right_shoulder_rotation_x")
-        self.right_shoulder_rotation_y = find_servo_in_list("right_shoulder_rotation_y")
+        self.head_x = self.find_servo_by_name("head_x")
+        self.head_y = self.find_servo_by_name("head_y")
+        self.jaw = self.find_servo_by_name("jaw")
+        self.left_torso = self.find_servo_by_name("left_torso")
+        self.right_torso = self.find_servo_by_name("right_torso")
+        self.left_wrist_serv = self.find_servo_by_name("left_wrist")
+        self.left_pinky = self.find_servo_by_name("left_pinky")
+        self.left_ring = self.find_servo_by_name("left_ring")
+        self.left_mid = self.find_servo_by_name("left_mid")
+        self.left_index = self.find_servo_by_name("left_index")
+        self.left_thumb = self.find_servo_by_name("left_thumb")
+        self.left_shoulder_flexion = self.find_servo_by_name("left_shoulder_flexion")
+        self.left_shoulder_abduction = self.find_servo_by_name("left_shoulder_abduction")
+        self.left_shoulder_rotation_x = self.find_servo_by_name("left_shoulder_rotation_x")
+        self.left_shoulder_rotation_y = self.find_servo_by_name("left_shoulder_rotation_y")
+        self.right_wrist_serv = self.find_servo_by_name("right_wrist")
+        self.right_pinky = self.find_servo_by_name("right_pinky")
+        self.right_ring = self.find_servo_by_name("right_ring")
+        self.right_mid = self.find_servo_by_name("right_mid")
+        self.right_index = self.find_servo_by_name("right_index")
+        self.right_thumb = self.find_servo_by_name("right_thumb")
+        self.right_shoulder_flexion = self.find_servo_by_name("right_shoulder_flexion")
+        self.right_shoulder_abduction = self.find_servo_by_name("right_shoulder_abduction")
+        self.right_shoulder_rotation_x = self.find_servo_by_name("right_shoulder_rotation_x")
+        self.right_shoulder_rotation_y = self.find_servo_by_name("right_shoulder_rotation_y")
 
         ####################################
         # hierarchical structures arranging the same servos listed above
@@ -190,6 +152,52 @@ class Inmoov(object):
         self.initialize()
         print("done with InMoov init")
 
+    def parse(self, obj):
+        # build a Servo object out of the data read from the JSON
+        # then append it into the global "servos" list
+        if "body_part" not in obj:
+            raise Exception("Could not parse JSON object")
+    
+        if "disabled" in obj and obj["disabled"] == True:
+            d = True
+        else:
+            d = False
+    
+        self.all_servos.append(Servo(
+            obj["id"],
+            obj["min_pulse"],
+            obj["max_pulse"],
+            obj["min_degree"],
+            obj["max_degree"],
+            obj["default_angle"],
+            obj["body_part"],
+            disabled=d
+        ))
+
+    def find_servo_by_name(self, name: str) -> (Servo, None):
+        # in the global list "servos" find the Servo obj with x.name matching given name
+        for i in self.all_servos:
+            if name == i.name:
+                return i
+        print("ERR: FAIL TO FIND")
+        return None
+
+    def set_servo_ros(self, cmd_string: str):
+        # designed to interface with ROS, receive a string encoding the servo + position, set the relevant servo
+        # this way we can run the interactive poser on a laptop or whatever
+        # input string format: "{name}!{degrees}"
+        name, deg = cmd_string.split("!")
+        s = self.find_servo_by_name(name)
+        if s is None:
+            return
+        try:
+            d = float(deg)
+        except ValueError as ve:
+            print(ve)
+            print(cmd_string)
+            print("fail to parse given degree")
+            return
+        s.rotate(d)
 
     def do_motion(self, motion_id):
         """

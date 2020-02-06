@@ -6,7 +6,6 @@ Authors:
     Brett Creeley
     Matty Baba Allos
 """
-# TODO: replace this with non-local, non-custom PWM hat drivers to be sure there's no issue from there
 # TODO: rename this file
 from Adafruit_PWM_Servo_Driver import PWM
 import threading
@@ -14,10 +13,10 @@ import threading
 
 # these are the actual PWM object(s) and where they are instantiated... not very happy about this but w/e
 pwm_shield_0 = PWM(0x40)
-pwm_shield_0.setPWMFreq(50)
 pwm_shield_1 = PWM(0x41)
-pwm_shield_1.setPWMFreq(50)
 pwm_shield_2 = PWM(0x42)
+pwm_shield_0.setPWMFreq(50)
+pwm_shield_1.setPWMFreq(50)
 pwm_shield_2.setPWMFreq(50)
 
 pwm_shields = [pwm_shield_0, pwm_shield_1, pwm_shield_2]
