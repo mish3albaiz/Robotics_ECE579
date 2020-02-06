@@ -1,0 +1,337 @@
+[
+    {
+        "id": 0,
+        "body_part": "right_pinky",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 220,
+        "max_pulse": 425,
+        "default_angle": 90,
+        "notes": [
+            "default position open",
+            "the more negative the more bent the finger",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 1,
+        "body_part": "right_thumb",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 220,
+        "max_pulse": 575,
+        "default_angle": 90,
+        "notes": [
+            "default position open",
+            "For some reason the thumb does get pulled when it opens",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 2,
+        "body_part": "right_mid",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 200,
+        "max_pulse": 700,
+        "default_angle": 90,
+        "notes": [
+            "default position open, init doesnt work? 0 is straining",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 3,
+        "body_part": "right_index",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 100,
+        "max_pulse": 450,
+        "default_angle": 90,
+        "notes": [
+            "default position open, works!",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 4,
+        "body_part": "right_ring",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 220,
+        "max_pulse": 575,
+        "default_angle": 90,
+        "notes": [
+            "default position CLOSED",
+            "Flipped around compared to other fingers, doesnt move too well but its ok",
+            "TODO: Needs to be looked internally and be tested again",
+            "does not close all the way",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 5,
+        "body_part": "right_wrist",
+        "min_degree": 0,
+        "max_degree": 0,
+        "min_pulse": 0,
+        "max_pulse": 0,
+        "default_angle": 0,
+        "disabled": true,
+        "notes": [
+            "TODO: Does not work needs to be looked at",
+            "It was really hard to get to the write servo to look at it",
+            "Does not turn",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 6,
+        "body_part": "right_shoulder_flexion",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 125,
+        "max_pulse": 300,
+        "default_angle": -90,
+        "notes": [
+            "Elbow, default is down",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 7,
+        "body_part": "right_shoulder_abduction",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 165,
+        "max_pulse": 276,
+        "default_angle": -90,
+        "notes": [
+            "values Updated On:3/26/2018",
+            "rotate around Z axis? like wings, pos is out, max draw 1.2A"
+        ]
+    },
+    {
+        "id": 8,
+        "body_part": "right_shoulder_rotation_x",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 272,
+        "max_pulse": 550,
+        "default_angle": -20,
+        "notes": [
+            "Lifts arm up, rotate around x axis, positive is forward",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 9,
+        "body_part": "right_shoulder_rotation_y",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 260,
+        "max_pulse": 471,
+        "default_angle": 20,
+        "notes": [
+            "rotate arm around itself, pos out neg in, difficulty moving",
+            "Flipped",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    
+    {
+        "id": 6,
+        "body_part": "left_shoulder_flexion",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 250,
+        "max_pulse": 370,
+        "default_angle": -90,
+        "notes": [
+            "left Elbow, mechanically disconnected",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 7,
+        "body_part": "left_shoulder_abduction",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 250,
+        "max_pulse": 325,
+        "default_angle": -90,
+        "notes": [
+            "values Updated On:3/26/2018",
+            "z rotation, wing flapping, mechanically disconnected"
+        ]
+    },
+    {
+        "id": 9,
+        "body_part": "left_shoulder_rotation_x",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 330,
+        "max_pulse": 550,
+        "default_angle": -20,
+        "notes": [
+            "Lifts arm up, positive is forward",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 8,
+        "body_part": "left_shoulder_rotation_y",
+        "min_degree": 90,
+        "max_degree": -90,
+        "min_pulse": 306,
+        "max_pulse": 471,
+        "default_angle": 20,
+        "notes": [
+            "rotate arm around itself",
+            "Flipped, positive is in, negatitive is out, feedback needs rewiring, and recalibrating",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 4,
+        "body_part": "left_ring",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 105,
+        "max_pulse": 515,
+        "default_angle": 90,
+        "notes": [
+            "more positive is closed",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 3,
+        "body_part": "left_mid",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 140,
+        "max_pulse": 520,
+        "default_angle": 90,
+        "notes": [
+            "more positive is open",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 5,
+        "body_part": "left_index",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 90,
+        "max_pulse": 535,
+        "default_angle": 90,
+        "notes": [
+            "more positive is open",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 0,
+        "body_part": "left_thumb",
+        "min_degree": 90,
+        "max_degree": -90,
+        "min_pulse": 220,
+        "max_pulse": 555,
+        "default_angle": 90,
+        "notes": [
+            "more negative is open",
+            "Flipped",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 1,
+        "body_part": "left_pinky",
+        "min_degree": 90,
+        "max_degree": -90,
+        "min_pulse": 110,
+        "max_pulse": 525,
+        "default_angle": 90,
+        "notes": [
+            "default open, more negative is open",
+            "Flipped",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 2,
+        "body_part": "left_wrist",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 110,
+        "max_pulse": 400,
+        "default_angle": 0,
+        "notes": [
+            "Positive makes wrist turn inward, very small range of motion",
+            "NOTE: Makes noise",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 18,
+        "body_part": "head_y",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 200,
+        "max_pulse": 500,
+        "default_angle": 0,
+        "notes": [
+            "default looks forward, neg is down",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 19,
+        "body_part": "head_x",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 200,
+        "max_pulse": 500,
+        "default_angle": 0,
+        "notes": [
+            "default center, looks forward, seems asymmetric?",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 20,
+        "body_part": "jaw",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 360,
+        "max_pulse": 460,
+        "default_angle": -90,
+        "notes": [
+            "default position closed, very minimal range of motion, consider changing bounds",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 21,
+        "body_part": "right_torso",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 140,
+        "max_pulse": 500,
+        "default_angle": 0,
+        "notes": ["Both torso have to move at the same time",
+			"negative turns him left, but 0 is not center"
+			,"values Updated On:3/26/2018"]
+    },
+    {
+        "id": 22,
+        "body_part": "left_torso",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 140,
+        "max_pulse": 500,
+        "default_angle": 0,
+        "notes": ["negative turns him left, but 0 is not center","values Updated On:3/26/2018"]
+    }
+]

@@ -1,0 +1,2 @@
+//Min pulse correspond to min degree
+//Max pulse correspond to max degree
