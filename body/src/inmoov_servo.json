@@ -4,26 +4,26 @@
         "body_part": "right_pinky",
         "min_degree": -90,
         "max_degree": 90,
-        "min_pulse": 220,
-        "max_pulse": 425,
-        "default_angle": 90,
+        "min_pulse": 230,
+        "max_pulse": 415,
+        "default_angle": 60,
         "notes": [
-            "default position open",
-            "the more negative the more bent the finger",
+            "min = closed, max = open",
             "values Updated On:3/26/2018"
         ]
     },
     {
         "id": 1,
-        "body_part": "right_thumb",
+        "body_part": "right_ring",
         "min_degree": -90,
         "max_degree": 90,
-        "min_pulse": 220,
-        "max_pulse": 575,
-        "default_angle": 90,
+        "min_pulse": 445,
+        "max_pulse": 210,
+        "default_angle": 60,
         "notes": [
-            "default position open",
-            "For some reason the thumb does get pulled when it opens",
+            "Flipped around compared to other fingers, doesnt move too well but its ok",
+            "TODO: Needs to be looked internally, maybe string shortened, maybe more leverage to increase range of motion????",
+            "210 = open, 445 = closed",
             "values Updated On:3/26/2018"
         ]
     },
@@ -32,11 +32,12 @@
         "body_part": "right_mid",
         "min_degree": -90,
         "max_degree": 90,
-        "min_pulse": 200,
-        "max_pulse": 700,
-        "default_angle": 90,
+        "min_pulse": 180,
+        "max_pulse": 440,
+        "default_angle": 60,
         "notes": [
-            "default position open, init doesnt work? 0 is straining",
+            "max = open, min = closed",
+            "TODO: base joint is broke, needs reprinted & then recalibrated",
             "values Updated On:3/26/2018"
         ]
     },
@@ -45,27 +46,26 @@
         "body_part": "right_index",
         "min_degree": -90,
         "max_degree": 90,
-        "min_pulse": 100,
+        "min_pulse": 180,
         "max_pulse": 450,
-        "default_angle": 90,
+        "default_angle": 60,
         "notes": [
-            "default position open, works!",
+            "max = open, min = closed",
             "values Updated On:3/26/2018"
         ]
     },
     {
         "id": 4,
-        "body_part": "right_ring",
+        "body_part": "right_thumb",
         "min_degree": -90,
         "max_degree": 90,
-        "min_pulse": 220,
-        "max_pulse": 575,
-        "default_angle": 90,
+        "min_pulse": 205,
+        "max_pulse": 450,
+        "default_angle": 60,
         "notes": [
-            "default position CLOSED",
-            "Flipped around compared to other fingers, doesnt move too well but its ok",
-            "TODO: Needs to be looked internally and be tested again",
-            "does not close all the way",
+            "min = closed, max = open",
+            "For some reason the thumb doesn't get pulled open much when opening",
+            "TODO: maybe the outer string needs shortened?",
             "values Updated On:3/26/2018"
         ]
     },
@@ -193,60 +193,7 @@
         ]
     },
     {
-        "id": 4,
-        "body_part": "left_ring",
-        "min_degree": -90,
-        "max_degree": 90,
-        "min_pulse": 105,
-        "max_pulse": 515,
-        "default_angle": 90,
-        "notes": [
-            "more positive is closed",
-            "values Updated On:3/26/2018"
-        ]
-    },
-    {
-        "id": 3,
-        "body_part": "left_mid",
-        "min_degree": -90,
-        "max_degree": 90,
-        "min_pulse": 140,
-        "max_pulse": 520,
-        "default_angle": 90,
-        "notes": [
-            "more positive is open",
-            "values Updated On:3/26/2018"
-        ]
-    },
-    {
-        "id": 5,
-        "body_part": "left_index",
-        "min_degree": -90,
-        "max_degree": 90,
-        "min_pulse": 90,
-        "max_pulse": 535,
-        "default_angle": 90,
-        "notes": [
-            "more positive is open",
-            "values Updated On:3/26/2018"
-        ]
-    },
-    {
-        "id": 0,
-        "body_part": "left_thumb",
-        "min_degree": 90,
-        "max_degree": -90,
-        "min_pulse": 220,
-        "max_pulse": 555,
-        "default_angle": 90,
-        "notes": [
-            "more negative is open",
-            "Flipped",
-            "values Updated On:3/26/2018"
-        ]
-    },
-    {
-        "id": 1,
+        "id": 16,
         "body_part": "left_pinky",
         "min_degree": 90,
         "max_degree": -90,
@@ -260,7 +207,60 @@
         ]
     },
     {
-        "id": 2,
+        "id": 16,
+        "body_part": "left_ring",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 105,
+        "max_pulse": 515,
+        "default_angle": 90,
+        "notes": [
+            "more positive is closed",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 16,
+        "body_part": "left_mid",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 140,
+        "max_pulse": 520,
+        "default_angle": 90,
+        "notes": [
+            "more positive is open",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 16,
+        "body_part": "left_index",
+        "min_degree": -90,
+        "max_degree": 90,
+        "min_pulse": 90,
+        "max_pulse": 535,
+        "default_angle": 90,
+        "notes": [
+            "more positive is open",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 16,
+        "body_part": "left_thumb",
+        "min_degree": 90,
+        "max_degree": -90,
+        "min_pulse": 220,
+        "max_pulse": 555,
+        "default_angle": 90,
+        "notes": [
+            "more negative is open",
+            "Flipped",
+            "values Updated On:3/26/2018"
+        ]
+    },
+    {
+        "id": 16,
         "body_part": "left_wrist",
         "min_degree": -90,
         "max_degree": 90,
@@ -274,7 +274,7 @@
         ]
     },
     {
-        "id": 18,
+        "id": 13,
         "body_part": "head_y",
         "min_degree": -90,
         "max_degree": 90,
@@ -282,12 +282,12 @@
         "max_pulse": 500,
         "default_angle": 0,
         "notes": [
-            "default looks forward, neg is down",
+            "min = down, max = up",
             "values Updated On:3/26/2018"
         ]
     },
     {
-        "id": 19,
+        "id": 14,
         "body_part": "head_x",
         "min_degree": -90,
         "max_degree": 90,
@@ -295,20 +295,20 @@
         "max_pulse": 500,
         "default_angle": 0,
         "notes": [
-            "default center, looks forward, seems asymmetric?",
+            "min = right, max = left",
             "values Updated On:3/26/2018"
         ]
     },
     {
-        "id": 20,
+        "id": 15,
         "body_part": "jaw",
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 360,
-        "max_pulse": 460,
+        "max_pulse": 470,
         "default_angle": -90,
         "notes": [
-            "default position closed, very minimal range of motion, consider changing bounds",
+            "min = closed, max = open",
             "values Updated On:3/26/2018"
         ]
     },
@@ -321,8 +321,8 @@
         "max_pulse": 500,
         "default_angle": 0,
         "notes": ["Both torso have to move at the same time",
-			"negative turns him left, but 0 is not center"
-			,"values Updated On:3/26/2018"]
+            "negative turns him left, but 0 is not center",
+            "values Updated On:3/26/2018"]
     },
     {
         "id": 22,
