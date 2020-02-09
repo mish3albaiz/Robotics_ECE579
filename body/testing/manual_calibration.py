@@ -48,7 +48,7 @@ while True:
 			break
 		
 		# actually set the PWM, function actually wants degrees so first need to convert
-		deg = linear_map(P,s.min_pulse,s.max_pulse,s.min_degree,s.max_degree)
+		deg = linear_map(P,s.min_pulse,s.max_pulse,s.min_angle,s.max_angle)
 		s.do_set_angle(deg)
 	
 print("exiting")

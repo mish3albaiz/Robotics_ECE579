@@ -38,8 +38,8 @@ class Servo(object):
         channel_id: The channel the Servo is connected to
         min_pulse: The minimum pulse the Servo allows
         max_pulse: The maximum pulse the Servo allows
-        min_degree: The minimum degree the Servo can rotate to
-        max_degree: The maximum degree the Servo can rotate to
+        min_angle: The minimum degree the Servo can rotate to
+        max_angle: The maximum degree the Servo can rotate to
         default_angle: The rest(initial)position of the servo.
         name: The name of the servo
     """
@@ -48,8 +48,8 @@ class Servo(object):
                  servo_id,
                  min_pulse,
                  max_pulse,
-                 min_degree=None,
-                 max_degree=None,
+                 min_angle=None,
+                 max_angle=None,
                  default_angle=None,
                  name="servo",
                  disabled=False
@@ -64,8 +64,8 @@ class Servo(object):
         self.shield_id = int(servo_id // 16)
         self.min_pulse = min_pulse
         self.max_pulse = max_pulse
-        self.min_degree = min_degree
-        self.max_degree = max_degree
+        self.min_angle = min_angle
+        self.max_angle = max_angle
         self.default_angle = default_angle
         self.name = name
         # sanity checking, in case of typos in the config json
@@ -74,13 +74,13 @@ class Servo(object):
         else:
             # currently we do not prevent either degrees or pwm from being upside-down, this might change in future
             # assert min_pulse <= max_pulse
-            # assert min_degree <= max_degree
+            # assert min_angle <= max_angle
             assert 1 <= max_pulse <= 4096
             assert 1 <= min_pulse <= 4096
-            assert 0 <= servo_id <= 50
-            assert -360 <= min_degree <= 360
-            assert -360 <= max_degree <= 360
-            assert min(min_degree, max_degree) <= default_angle <= max(min_degree, max_degree)
+            assert 0 <= servo_id <= 47  # maximum is 3 hats, only 48 channels possible
+            assert -360 <= min_angle <= 360
+            assert -360 <= max_angle <= 360
+            assert min(min_angle, max_angle) <= default_angle <= max(min_angle, max_angle)
         
         # running/idle flags: normal Events can only wait for a rising edge, if I want to wait for a falling edge, i need to
         # set up a complementary system like this. also they're mostly being used as flags, not as "events", but whatever.
@@ -116,20 +116,22 @@ class Servo(object):
         self.off()
         
     def __str__(self) -> str:
-        # self.name, self.id, self.channel_id, self.shield_id, self.min_pulse, self.max_pulse, self.min_degree, self.max_degree, self.default_angle, self.disabled
+        # self.name, self.id, self.channel_id, self.shield_id, self.min_pulse, self.max_pulse, self.min_angle, self.max_angle, self.default_angle, self.disabled
         # curr_angle, curr_pwm, curr_on
-        s = "name={}, servo_id={}, channel_id={}, shield_id={}, min_pulse={}, max_pulse={}, min_degree={}, max_degree={}, default_angle={}, disabled={}\ncurr_angle={}, curr_pwm={}, curr_on={}"
+        s = "name={}, servo_id={}, channel_id={}, shield_id={}, min_pulse={}, max_pulse={}, min_angle={}, max_angle={}, default_angle={}, disabled={}\ncurr_angle={}, curr_pwm={}, curr_on={}"
         return s.format(self.name, self.servo_id, self.channel_id, self.shield_id, self.min_pulse, self.max_pulse,
-                        self.min_degree, self.max_degree, self.default_angle, self.disabled,
+                        self.min_angle, self.max_angle, self.default_angle, self.disabled,
                         self.curr_angle, self.curr_pwm, self.curr_on)
 
 
 
     def rotate(self, degree: float):
+        """
+        Rotate to the specified degrees
+        non-threading method of controlling the servo
+        perform safety clamp before passing to do_set_angle
+        """
         # todo: rename
-        """ Rotate to the specified degrees """
-        # non-threading method of controlling the servo
-        # perform safety clamp before passing to do_set_angle
         degree_safe = self.degrees_clamp(degree)
         # calling the non-threading control function should cancel any pending threading events
         self.abort()
@@ -140,12 +142,13 @@ class Servo(object):
             print("Could not rotate {} to {} degree").format(self.name, degree)
 
 
-    # safety clamp (in angle space)
-    # interpolate (in angle space)
-    # adds frames to the frame queue (with lock)
-    # sets the "running" flag unconditionally (note: no harm in setting an already set flag)
-    # * thread will jump in with "do_set_servo_angle" when it is the correct time
     def rotate_thread(self, degree: float, durr: float):
+        """
+        Rotate to the specified degrees gradually over the specified duration
+        threading method of controlling the servo
+        perform safety clamp, interpolate, append frames to frame queue, and sets running flag
+        the thread will jump in with "do_set_servo_angle" when it is the correct time
+        """
         # safety clamp
         dest = self.degrees_clamp(degree)
         
@@ -176,14 +179,16 @@ class Servo(object):
             # clear "sleeping" event, does not trigger anything (note: clear before set)
             self.idle_flag.clear()
             # set the "running" event, this will trigger the thread to begin consuming frames
+            # note: do this unconditionally! no harm in setting an already set flag
             self.running_flag.set()
 
 
     def do_set_angle(self, degree: float):
-        # take angle after clamp, already known to be safe
-        # called by both threading and non-threading approaches
-        # convert to pwm
-        # with lock, set pwm
+        """
+        take angle after clamp, already known to be safe value
+        convert to pwm, set actual pwm, also set "self.curr_x" values
+        called by both threading and non-threading approaches
+        """
         
         if self.disabled:
             return
@@ -202,9 +207,10 @@ class Servo(object):
         self.rotate(self.default_angle)
 
     def off(self):
-        """ Rotate to the specified degrees """
-        # setting PWM to 0 cuts power to the servo and makes it malleable
-        
+        """ setting PWM to 0 cuts power to the servo and makes it malleable """
+        if self.disabled:
+            return
+
         # abort so it doesn't wake up after turning off until i explicitly tell it to wake up
         self.abort()
         try:
@@ -229,7 +235,7 @@ class Servo(object):
 
     def degrees_clamp(self, degree: float) -> float:
         # clamp for safety
-        degree_safe = bidirectional_clamp(degree, self.min_degree, self.max_degree)
+        degree_safe = bidirectional_clamp(degree, self.min_angle, self.max_angle)
         # warn if clamping actually occurred
         if degree != degree_safe:
             warnings.warn("Degree {} is out of range, clamping to safe value {}".format(degree, degree_safe))
@@ -238,7 +244,7 @@ class Servo(object):
     def degrees_to_pulse(self, degree: float) -> int:
         """ Map degree input value to a pulse length output value """
         # perform actual mapping
-        pulse = int(linear_map(degree, self.min_degree, self.max_degree, self.min_pulse, self.max_pulse))
+        pulse = int(linear_map(degree, self.min_angle, self.max_angle, self.min_pulse, self.max_pulse))
         return pulse
 
 # removed setters & getters cuz parameters are not redefined after initialization, therefore they are useless

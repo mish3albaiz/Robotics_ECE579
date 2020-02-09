@@ -1,5 +1,6 @@
 #!/bin/python
 import time
+from Servo import Servo
 
 # members of each class:
 # finger: bend, bend_max, straighten_max
@@ -23,34 +24,25 @@ import time
 
 
 class Finger(object):
-    """
-    This class represents an Inmoov Finger.
-    """
+    """ This class represents an Inmoov Finger. """
 
-    def __init__(self, servo):
+    def __init__(self, servo: Servo):
         if servo is None:
             raise Exception("Could not initialize Finger")
-
         self.servo = servo
 
-    def bend_max(self):
-        """
-        Bend the Finger the max amount
-        """
-        self.servo.rotate(self.servo.min_degree)
-
-    def bend(self, degree):
-        """
-        Bend the Finger
-        """
+    def bend(self, degree: float):
+        """ Alias for .rotate() on this servo, 0=close, 100=open """
         self.servo.rotate(degree)
 
-    def straighten_max(self):
-        """
-        This is to make the finger straight.
-        """
-        self.servo.rotate(self.servo.max_degree)
-        
+    def open(self):
+        """ Open/straighten/point """
+        self.servo.rotate(self.servo.max_angle)
+
+    def close(self):
+        """ Close/curl/grip """
+        self.servo.rotate(self.servo.min_angle)
+
     def initialize(self):
         self.servo.initialize()
 
@@ -61,69 +53,73 @@ class Finger(object):
 class Hand(object):
     """ This class represents an Inmoov Hand. """
 
-    def __init__(self, pinky_finger, ring_finger, mid_finger, index_finger, thumb_finger):
+    def __init__(self, pinky: Finger, ring: Finger, mid: Finger, index: Finger, thumb: Finger):
         """ Build an Inmoov Hand """
-        if pinky_finger is None or ring_finger is None or mid_finger is None or index_finger is None or thumb_finger is None:
+        if pinky is None or ring is None or mid is None or index is None or thumb is None:
             raise Exception('Could not initialize Hand')
-        self.pinky_finger = pinky_finger
-        self.ring_finger = ring_finger
-        self.mid_finger = mid_finger
-        self.index_finger = index_finger
-        self.thumb = thumb_finger
+        self.pinky = pinky
+        self.ring = ring
+        self.mid = mid
+        self.index = index
+        self.thumb = thumb
 
-    def straighten_all_fingers(self):
-        """ Straighten all fingers for waving/high-fiving/etc. """
-        self.pinky_finger.straighten_max()
-        self.ring_finger.straighten_max()
-        self.mid_finger.straighten_max()
-        self.index_finger.straighten_max()
-        self.thumb.straighten_max()
+    def bend(self, pinky=None, ring=None, mid=None, index=None, thumb=None):
+        """ Bend the Fingers that have values sent in. Pinky thru Thumb. 0=close, 100=open """
+        if pinky is not None:
+            self.pinky.bend(pinky)
+        if ring is not None:
+            self.ring.bend(ring)
+        if mid is not None:
+            self.mid.bend(mid)
+        if index is not None:
+            self.index.bend(index)
+        if thumb is not None:
+            self.thumb.bend(thumb)
+            
+    def bend_all(self, deg: float):
+        """ alias for calling .bend() will all finger values the same """
+        v = [deg] * 5
+        self.bend(*v)
 
-    def make_fist(self):
-        """ Bend all fingers in to make a fist """
-        self.pinky_finger.bend_max()
-        self.ring_finger.bend_max()
-        self.mid_finger.bend_max()
-        self.index_finger.bend_max()
-        self.thumb.bend_max()
+    def open_all(self):
+        """ Open/straighten/point all fingers for waving/high-fiving/etc. """
+        self.pinky.open()
+        self.ring.open()
+        self.mid.open()
+        self.index.open()
+        self.thumb.open()
 
-    def move_fingers(self, pinky_deg=None, ring_deg=None, mid_deg=None,
-                     index_deg=None, thumb_deg=None):
-        """ Bend the Fingers that have values sent in."""
-
-        if pinky_deg is not None:
-            self.pinky_finger.bend(pinky_deg)
-        if ring_deg is not None:
-            self.ring_finger.bend(ring_deg)
-        if mid_deg is not None:
-            self.mid_finger.bend(mid_deg)
-        if index_deg is not None:
-            self.index_finger.bend(index_deg)
-        if thumb_deg is not None:
-            self.thumb.bend(thumb_deg)
+    def close_all(self):
+        """ Close/curl/grip """
+        self.pinky.close()
+        self.ring.close()
+        self.mid.close()
+        self.index.close()
+        self.thumb.close()
 
     def initialize(self):
-        self.pinky_finger.initialize()
-        self.ring_finger.initialize()
-        self.mid_finger.initialize()
-        self.index_finger.initialize()
+        self.pinky.initialize()
+        self.ring.initialize()
+        self.mid.initialize()
+        self.index.initialize()
         self.thumb.initialize()
 
     def off(self):
-        """ Turn off all fingers off"""
-        self.pinky_finger.off()
-        self.ring_finger.off()
-        self.mid_finger.off()
-        self.index_finger.off()
+        """ De-power all fingers """
+        self.pinky.off()
+        self.ring.off()
+        self.mid.off()
+        self.index.off()
         self.thumb.off()
 
 
+'''
 class Wrist(object):
     """ This class represents an Inmoov Wrist """
 
     # TODO: Pull apart Inmoov's forearm to find out servo models for a Wrist. These values are just copied from the HS-805BB Servo.
 
-    def __init__(self, servo):
+    def __init__(self, servo: Servo):
         """ Set the Servo for this Wrist """
 
         if servo is None:
@@ -131,14 +127,14 @@ class Wrist(object):
         self.servo = servo
 
     def rotate(self, degree):
-        """ Rotate this Wrist the desired degree """
+        """ Alias for .rotate() on this servo """
         self.servo.rotate(degree)
 
     def initialize(self):
         self.servo.initialize()
 
     def off(self):
-        """ Turn off all fingers off"""
+        """ De-power this servo """
         self.servo.off()
 
 
@@ -146,7 +142,7 @@ class Forearm(object):
     """
     This class represents an Inmoov Forearm
     """
-    
+
     def __init__(self, hand, wrist):
         """
         Build an Inmoov Forearm
@@ -155,11 +151,11 @@ class Forearm(object):
             raise Exception("Could not build a forearm")
         self.wrist = wrist
         self.hand = hand
-    
+
     def initialize(self):
         self.wrist.initialize()
         self.hand.initialize()
-    
+
     def off(self):
         self.wrist.off()
         self.hand.off()
@@ -167,7 +163,7 @@ class Forearm(object):
 
 class Shoulder(object):
     """ This class represents an Inmoov Shoulder """
-    
+
     def __init__(self, flexion_servo, abduction_servo, rotation_servo_x, rotation_servo_y):
         """ Build an Inmoov Shoulder """
         if flexion_servo is None or abduction_servo is None or rotation_servo_x is None or rotation_servo_y is None:
@@ -176,30 +172,30 @@ class Shoulder(object):
         self.abduction_servo = abduction_servo
         self.rotation_servo_x = rotation_servo_x
         self.rotation_servo_y = rotation_servo_y
-        
+
     # TODO: DEFINITELY want to reduce/rename these function
-    
+
     def flex(self, degree):
         self.flexion_servo.rotate(degree)
-    
+
     def extend(self, degree):
         self.flexion_servo.rotate(degree)
-    
+
     def abduction_up(self, degree):
         self.abduction_servo.rotate(degree)
-    
+
     def abduction_down(self, degree):
         self.abduction_servo.rotate(degree)
-    
+
     def rotation_internal(self, degree):
         self.rotation_servo_y.rotate(degree)
-    
+
     def rotation_external(self, degree):
         self.rotation_servo_y.rotate(degree)
-    
+
     def rotation_up(self, degree):
         self.rotation_servo_x.rotate(degree)
-    
+
     def rotation_down(self, degree):
         self.rotation_servo_x.rotate(degree)
 
@@ -215,37 +211,57 @@ class Shoulder(object):
         self.rotation_servo_y.off()
         self.abduction_servo.off()
         self.flexion_servo.off()
-
+'''
 
 class Arm(object):
     """
     This class represents an Inmoov Arm
+    Arm = wrist + elbow + twist + lift_front + lift_out
+    This hierarchy is unlikely to be final
     """
 
-    def __init__(self, forearm, shoulder):
+    def __init__(self, hand: Hand, wrist: Servo, elbow: Servo, armtwist: Servo, lift_front: Servo, lift_out: Servo):
         """
         Build an Inmoov Arm
         """
-        if forearm is None or shoulder is None:
+        if hand is None or wrist is None or elbow is None or armtwist is None or lift_front is None or lift_out is None:
             raise Exception("Could not build a arm")
-        self.forearm = forearm
-        self.shoulder = shoulder
+        self.hand = hand
+        self.wrist = wrist
+        self.elbow = elbow
+        self.twist = armtwist
+        self.lift_front = lift_front
+        self.lift_out = lift_out
 
     def initialize(self):
-        self.forearm.initialize()
+        """ set all arm members to default positions in a sequence, with generous waits in between """
+        # TODO: might want to change initialization order? order/wait length depends on where the arm position was, and we can't know that
+        self.hand.initialize()
+        self.wrist.initialize()
+        time.sleep(0.5)
+        self.elbow.initialize()
         time.sleep(1)
-        self.shoulder.initialize()
+        self.lift_front.initialize()
+        self.lift_out.initialize()
+        time.sleep(1)
+        self.twist.initialize()
+        time.sleep(1)
 
     def off(self):
-        self.forearm.off()
-        self.shoulder.off()
+        """ De-power all members """
+        self.hand.off()
+        self.wrist.off()
+        self.elbow.off()
+        self.twist.off()
+        self.lift_front.off()
+        self.lift_out.off()
 
 
 class Torso(object):
     """ This class is used to control Inmoov's Torso """
     # TODO these need to be very precisely calibrated since they are fighting eachother
 
-    def __init__(self, left_servo, right_servo):
+    def __init__(self, left_servo: Servo, right_servo: Servo):
         """
         Initialize all of Inmoov's Torso variables.
         """
@@ -279,7 +295,7 @@ class Head(object):
     - TODO: Add mouth and eye control.
     """
     
-    def __init__(self, x_servo, y_servo, jaw):
+    def __init__(self, x_servo: Servo, y_servo: Servo, jaw: Servo):
         """ Initialize all Head Servos and look forward """
         if x_servo is None or y_servo is None or jaw is None:
             raise Exception("Could not initialize Head")

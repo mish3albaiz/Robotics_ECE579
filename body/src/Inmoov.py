@@ -34,6 +34,10 @@ Structures_new.py just puts all the ways of grouping servos into one file, they 
 # TODO: verify right wrist servo works
 
 
+# right fingers: pinky=0 thru thumb=4
+# head: y=13, x=14, jaw=15
+
+# note: shoulder_lift_out max current draw is nearly 1.2A, thats almost our entire budget for a board...
 
 class Inmoov(object):
     """
@@ -63,7 +67,7 @@ class Inmoov(object):
         self.jaw = self.find_servo_by_name("jaw")
         self.left_torso = self.find_servo_by_name("left_torso")
         self.right_torso = self.find_servo_by_name("right_torso")
-        self.left_wrist_serv = self.find_servo_by_name("left_wrist")
+        self.left_wrist = self.find_servo_by_name("left_wrist")
         self.left_pinky = self.find_servo_by_name("left_pinky")
         self.left_ring = self.find_servo_by_name("left_ring")
         self.left_mid = self.find_servo_by_name("left_mid")
@@ -73,7 +77,7 @@ class Inmoov(object):
         self.left_shoulder_lift_out = self.find_servo_by_name("left_shoulder_lift_out")
         self.left_shoulder_lift_front = self.find_servo_by_name("left_shoulder_lift_front")
         self.left_arm_rotate = self.find_servo_by_name("left_arm_rotate")
-        self.right_wrist_serv = self.find_servo_by_name("right_wrist")
+        self.right_wrist = self.find_servo_by_name("right_wrist")
         self.right_pinky = self.find_servo_by_name("right_pinky")
         self.right_ring = self.find_servo_by_name("right_ring")
         self.right_mid = self.find_servo_by_name("right_mid")
@@ -95,19 +99,6 @@ class Inmoov(object):
         # torso = left_torso + right_torso
         self.torso = Torso(self.left_torso, self.right_torso)
 
-        # left arm
-        # better hierarchy: arm = hand(5) + wrist(1) + elbow(1) + armtwist(1) + shoulder(2)
-        # flexion = elbow
-        # abduction = ?forward?
-        # rotation_x = "lifts arm up"
-        # rotation_y = "rotate arm around itself"
-        # TODO: possibly too much hierarchy?
-        # left_wrist = left_wrist
-        # left_hand = left_pinky + left_ring + left_mid + left_index + left_thumb
-        # left_forearm = left_hand + left_wrist
-        # left_shoulder = left_elbow + left_shoulder_lift_out + left_shoulder_lift_front + left_arm_rotate
-        # left_arm = left_forearm + left_shoulder
-        self.left_wrist = Wrist(self.left_wrist_serv)
         self.left_hand = Hand(
             Finger(self.left_pinky),
             Finger(self.left_ring),
@@ -115,23 +106,12 @@ class Inmoov(object):
             Finger(self.left_index),
             Finger(self.left_thumb)
         )
-        self.left_forearm = Forearm(self.left_hand, self.left_wrist)
-        self.left_shoulder = Shoulder(
-            self.left_elbow,
-            self.left_shoulder_lift_out,
-            self.left_shoulder_lift_front,
-            self.left_arm_rotate)
+        
+        # left arm
+        # better hierarchy: arm = hand(5) + wrist(1) + elbow(1) + twist(1) + shoulder(2)
+        self.left_arm = Arm(self.left_hand, self.left_wrist, self.left_elbow, self.left_arm_rotate,
+                            self.left_shoulder_lift_front, self.left_shoulder_lift_out)
 
-        self.left_arm = Arm(self.left_forearm, self.left_shoulder)
-
-        # Right side
-        # TODO: possibly too much hierarchy?
-        # right_wrist = right_wrist
-        # right_hand = right_pinky + right_ring + right_mid + right_index + right_thumb
-        # right_forearm = right_hand + right_wrist
-        # right_shoulder = right_elbow + right_shoulder_lift_out + right_shoulder_lift_front + right_arm_rotate
-        # right_arm = right_forearm + right_shoulder
-        self.right_wrist = Wrist(self.right_wrist_serv)
         self.right_hand = Hand(
             Finger(self.right_pinky),
             Finger(self.right_ring),
@@ -139,17 +119,14 @@ class Inmoov(object):
             Finger(self.right_index),
             Finger(self.right_thumb)
         )
-        self.right_forearm = Forearm(self.right_hand, self.right_wrist)
-        self.right_shoulder = Shoulder(
-            self.right_elbow,
-            self.right_shoulder_lift_out,
-            self.right_shoulder_lift_front,
-            self.right_arm_rotate)
 
-        self.right_arm = Arm(self.right_forearm, self.right_shoulder)
+        # right arm
+        # better hierarchy: arm = hand(5) + wrist(1) + elbow(1) + twist(1) + shoulder(2)
+        self.right_arm = Arm(self.right_hand, self.right_wrist, self.right_elbow, self.right_arm_rotate,
+                             self.right_shoulder_lift_front, self.right_shoulder_lift_out)
 
         # should probably just init to "off" then explicitly call "initialize" outside this
-        self.initialize()
+        self.off()
         print("done with InMoov init")
 
     def parse(self, obj):
@@ -167,14 +144,14 @@ class Inmoov(object):
             obj["id"],
             obj["min_pulse"],
             obj["max_pulse"],
-            obj["min_degree"],
-            obj["max_degree"],
+            obj["min_angle"],
+            obj["max_angle"],
             obj["default_angle"],
             obj["body_part"],
             disabled=d
         ))
 
-    def find_servo_by_name(self, name: str) -> (Servo, None):
+    def find_servo_by_name(self, name: str) -> Servo:
         # in the global list "servos" find the Servo obj with x.name matching given name
         for i in self.all_servos:
             if name == i.name:
@@ -214,50 +191,48 @@ class Inmoov(object):
 
 
     def wave(self):
-        self.left_arm.forearm.hand.off()
-        self.left_arm.shoulder.rotation_up(-20)
-        self.left_arm.shoulder.rotation_internal(60)
-        self.left_arm.shoulder.abduction_up(-90)
+        self.left_arm.hand.open_all()
+        self.left_arm.lift_front.rotate(-20) # lift_front
+        self.left_arm.twist.rotate(60) # arm_twist
+        self.left_arm.lift_out.rotate(-90) # lift_out
         time.sleep(2)
-        self.left_arm.shoulder.abduction_up(60)
+        self.left_arm.lift_out.rotate(60)
         time.sleep(0.5)
         time.sleep(2)
-        self.left_arm.shoulder.abduction_up(90)
+        self.left_arm.lift_out.rotate(90)
         time.sleep(1.5)
-        self.left_arm.shoulder.abduction_up(0)
+        self.left_arm.lift_out.rotate(0)
         time.sleep(2)
-        self.left_arm.shoulder.abduction_up(90)
+        self.left_arm.lift_out.rotate(90)
         time.sleep(1.5)
-        self.left_arm.shoulder.abduction_up(0)
+        self.left_arm.lift_out.rotate(0)
     
-        self.left_arm.shoulder.rotation_up(-20)
-        self.left_arm.shoulder.flex(90)
-        self.left_arm.shoulder.rotation_internal(60)
+        self.left_arm.lift_front.rotate(-20)
+        self.left_arm.elbow.rotate(90) # elbow
+        self.left_arm.twist.rotate(60)
 
     def point(self):
-        self.left_arm.shoulder.rotation_up(-20)
-        self.left_arm.shoulder.rotation_internal(60)
+        self.left_arm.lift_front.rotate(-20)
+        self.left_arm.twist.rotate(60)
         time.sleep(3)
 
-        self.left_arm.shoulder.rotation_internal(90)
-        self.left_arm.forearm.hand.make_fist()
-        self.left_arm.shoulder.rotation_up(60)
-        self.left_arm.forearm.hand.straighten_all_fingers()
+        self.left_arm.twist.rotate(90)
+        self.left_arm.hand.close_all()
+        self.left_arm.lift_front.rotate(60)
+        self.left_arm.hand.open_all()
     def thumbs_down(self):
         pass
     def goodbye(self):
         pass
 
     def initialize(self):
-        """initializes InMoov"""
+        """ initializes all servos in InMoov, order/delays might be important """
         self.head.initialize()
         self.left_arm.initialize()
         self.right_arm.initialize()
         self.torso.initialize()
 
     def off(self):
-        """Turns InMoov off"""
-        self.head.off()
-        self.left_arm.off()
-        self.right_arm.off()
-        self.torso.off()
+        """ Turns off all servos in InMoov """
+        for s in self.all_servos:
+            s.off()
