@@ -2,82 +2,82 @@
     {
         "id": 0,
         "body_part": "right_pinky",
-        "min_degree": -90,
-        "max_degree": 90,
+        "min_degree": 0,
+        "max_degree": 100,
         "min_pulse": 230,
         "max_pulse": 415,
-        "default_angle": 60,
+        "default_angle": 80,
         "notes": [
             "min = closed, max = open",
-            "values Updated On:3/26/2018"
+            "2/7/2020"
         ]
     },
     {
         "id": 1,
         "body_part": "right_ring",
-        "min_degree": -90,
-        "max_degree": 90,
+        "min_degree": 0,
+        "max_degree": 100,
         "min_pulse": 445,
         "max_pulse": 210,
-        "default_angle": 60,
+        "default_angle": 80,
         "notes": [
             "Flipped around compared to other fingers, doesnt move too well but its ok",
             "TODO: Needs to be looked internally, maybe string shortened, maybe more leverage to increase range of motion????",
             "210 = open, 445 = closed",
-            "values Updated On:3/26/2018"
+            "2/7/2020"
         ]
     },
     {
         "id": 2,
         "body_part": "right_mid",
-        "min_degree": -90,
-        "max_degree": 90,
+        "min_degree": 0,
+        "max_degree": 100,
         "min_pulse": 180,
         "max_pulse": 440,
-        "default_angle": 60,
+        "default_angle": 80,
         "notes": [
             "max = open, min = closed",
             "TODO: base joint is broke, needs reprinted & then recalibrated",
-            "values Updated On:3/26/2018"
+            "2/7/2020"
         ]
     },
     {
         "id": 3,
         "body_part": "right_index",
-        "min_degree": -90,
-        "max_degree": 90,
+        "min_degree": 0,
+        "max_degree": 100,
         "min_pulse": 180,
         "max_pulse": 450,
-        "default_angle": 60,
+        "default_angle": 80,
         "notes": [
             "max = open, min = closed",
-            "values Updated On:3/26/2018"
+            "2/7/2020"
         ]
     },
     {
         "id": 4,
         "body_part": "right_thumb",
-        "min_degree": -90,
-        "max_degree": 90,
+        "min_degree": 0,
+        "max_degree": 100,
         "min_pulse": 205,
         "max_pulse": 450,
-        "default_angle": 60,
+        "default_angle": 80,
         "notes": [
             "min = closed, max = open",
             "For some reason the thumb doesn't get pulled open much when opening",
             "TODO: maybe the outer string needs shortened?",
-            "values Updated On:3/26/2018"
+            "2/7/2020"
         ]
     },
     {
         "id": 5,
         "body_part": "right_wrist",
+        "disabled": true,
         "min_degree": 0,
         "max_degree": 0,
         "min_pulse": 0,
         "max_pulse": 0,
         "default_angle": 0,
-        "disabled": true,
         "notes": [
             "TODO: Does not work needs to be looked at",
             "It was really hard to get to the write servo to look at it",
@@ -94,6 +94,7 @@
         "max_pulse": 300,
         "default_angle": -90,
         "notes": [
+            "previously Flexion",
             "Elbow, default is down",
             "values Updated On:3/26/2018"
         ]
@@ -107,6 +108,7 @@
         "max_pulse": 276,
         "default_angle": -90,
         "notes": [
+            "previously Abduction",
             "values Updated On:3/26/2018",
             "rotate around Z axis? like wings, pos is out, max draw 1.2A"
         ]
@@ -120,6 +122,7 @@
         "max_pulse": 550,
         "default_angle": -20,
         "notes": [
+            "previously rotation_servo_x",
             "Lifts arm up, rotate around x axis, positive is forward",
             "values Updated On:3/26/2018"
         ]
@@ -133,6 +136,7 @@
         "max_pulse": 471,
         "default_angle": 20,
         "notes": [
+            "previously rotation_servo_y, AKA armtwist or twist",
             "rotate arm around itself, pos out neg in, difficulty moving",
             "Flipped",
             "values Updated On:3/26/2018"
@@ -155,6 +159,7 @@
     {
         "id": 7,
         "body_part": "left_shoulder_lift_out",
+        "disabled": true,
         "min_degree": -90,
         "max_degree": 90,
         "min_pulse": 250,
@@ -181,6 +186,7 @@
     {
         "id": 8,
         "body_part": "left_arm_rotate",
+        "disabled": true,
         "min_degree": 90,
         "max_degree": -90,
         "min_pulse": 306,
@@ -283,7 +289,7 @@
         "default_angle": 0,
         "notes": [
             "min = down, max = up",
-            "values Updated On:3/26/2018"
+            "2/7/2020"
         ]
     },
     {
@@ -296,20 +302,20 @@
         "default_angle": 0,
         "notes": [
             "min = right, max = left",
-            "values Updated On:3/26/2018"
+            "2/7/2020"
         ]
     },
     {
         "id": 15,
         "body_part": "jaw",
-        "min_degree": -90,
-        "max_degree": 90,
+        "min_degree": 0,
+        "max_degree": 100,
         "min_pulse": 360,
         "max_pulse": 470,
-        "default_angle": -90,
+        "default_angle": 0,
         "notes": [
             "min = closed, max = open",
-            "values Updated On:3/26/2018"
+            "2/7/2020"
         ]
     },
     {
