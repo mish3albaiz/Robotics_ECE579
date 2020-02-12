@@ -219,9 +219,9 @@ class Servo(object):
                 self.curr_angle = None
                 self.curr_pwm = 0
                 set_pwm(self.shield_id, self.channel_id, 0)
-        except ValueError as exception:
+        except Exception as exception:
             print(exception)
-            print("Could not turn off {}").format(self.name)
+            print("Could not turn off", self.name)
 
 
     # clear the frame queue to stop any currently-pending movements.

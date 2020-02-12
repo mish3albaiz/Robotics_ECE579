@@ -6,23 +6,26 @@ Authors:
     Brett Creeley
     Matty Baba Allos
 """
-from Adafruit_PWM_Servo_Driver import PWM
 import threading
 
 
 # these are the actual PWM object(s) and where they are instantiated... not very happy about this but w/e
 # init with correct addresses
-pwm_shield_0 = PWM(0x4A) # 0-15
-pwm_shield_1 = PWM(0x4C) # 16-31, currently no headers tho
-pwm_shield_2 = PWM(0x4B) # 32-47
-# assemble as list
-pwm_shields = [pwm_shield_0, pwm_shield_1, pwm_shield_2]
-# for each shield,
-for p in pwm_shields:
-    # set correct frequency
-    p.setPWMFreq(50)
-    # wipe all values from past runs
-    p.setAllPWM(0,0)
+try:
+    from Adafruit_PWM_Servo_Driver import PWM
+    pwm_shield_0 = PWM(0x4A) # 0-15
+    pwm_shield_1 = PWM(0x4C) # 16-31, currently no headers tho
+    pwm_shield_2 = PWM(0x4B) # 32-47
+    # assemble as list
+    pwm_shields = [pwm_shield_0, pwm_shield_1, pwm_shield_2]
+    # for each shield,
+    for p in pwm_shields:
+        # set correct frequency
+        p.setPWMFreq(50)
+        # wipe all values from past runs
+        p.setAllPWM(0,0)
+except ModuleNotFoundError:
+    pwm_shields = [None, None, None]
 
 
 # lock object to ensure only 1 thread touches the hats at a given instant
