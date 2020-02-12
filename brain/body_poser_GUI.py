@@ -17,6 +17,8 @@ import Inmoov
 # all sliders have the same callback function: check all sliders to see which slider(s) have changed and send them over ROS
 # know it is changed by checking against the appropriate "current value" list
 
+# TODO: import ROS libraries, set up ROS node, write code to publish string to node
+
 fullsize = 600
 
 
