@@ -10,6 +10,8 @@ import json
 import time
 from Servo import Servo
 from Structures_new import *
+from inspect import getsourcefile
+from os.path import abspath, join, dirname
 
 # all of the config data (min angle, max angle, channel, etc) is stored in this JSON file
 INMOOV_FILE = "inmoov_servo.json"
@@ -46,15 +48,20 @@ class Inmoov(object):
     """
     def __init__(self):
         """
-        Build most of Inmoov's parts.
+        Build all of Inmoov's parts.
         """
         print("begin InMoov init")
         
         self.all_servos = []
+
+        # returns the name/location of the Inmoov.py file, regardless of the current working directory
+        whereami = abspath(getsourcefile(lambda: 0))
+        # turns that filename into the absolute location of the json file
+        inmoov_json_absolute = join(dirname(whereami), INMOOV_FILE)
         
         # open the json config file
         # run the "parse" function on each object it reads from file, therefore filling the "servos" list
-        with open(INMOOV_FILE) as json_file:
+        with open(inmoov_json_absolute) as json_file:
             json.load(json_file,object_hook=self.parse)
             
         self.all_servos.sort(key=lambda x: x.servo_id)
