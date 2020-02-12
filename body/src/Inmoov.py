@@ -169,6 +169,12 @@ class Inmoov(object):
     def set_servo_ros(self, cmd_string: str):
         # designed to interface with ROS, receive a string encoding the servo + position, set the relevant servo
         # this way we can run the interactive poser on a laptop or whatever
+        if cmd_string == "off":
+            self.off()
+            return
+        if cmd_string == "init":
+            self.initialize()
+            return
         # input string format: "{name}!{degrees}"
         name, deg = cmd_string.split("!")
         s = self.find_servo_by_name(name)
@@ -176,12 +182,11 @@ class Inmoov(object):
             return
         try:
             d = float(deg)
+            s.rotate(d)
         except ValueError as ve:
             print(ve)
             print(cmd_string)
             print("fail to parse given degree")
-            return
-        s.rotate(d)
 
     def do_motion(self, motion_id):
         """
@@ -234,6 +239,7 @@ class Inmoov(object):
 
     def initialize(self):
         """ initializes all servos in InMoov, order/delays might be important """
+        print("inmoov all init")
         self.head.initialize()
         self.left_arm.initialize()
         self.right_arm.initialize()
@@ -241,5 +247,6 @@ class Inmoov(object):
 
     def off(self):
         """ Turns off all servos in InMoov """
+        print("inmoov all off")
         for s in self.all_servos:
             s.off()
