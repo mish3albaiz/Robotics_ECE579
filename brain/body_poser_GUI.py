@@ -19,7 +19,9 @@ import Inmoov
 
 # TODO: import ROS libraries, set up ROS node, write code to publish string to node
 
-fullsize = 600
+slider_fullsize = 500
+button_padx = 50
+button_pady = 8
 
 
 class Application(tk.Frame):
@@ -66,19 +68,19 @@ class Application(tk.Frame):
 				self.current_values[-1].append(0)
 		
 		self.butt_init = tk.Button(master, text="INIT", command=self.inmoov_init)
-		self.butt_init.grid(row=0, column=0)
+		self.butt_init.grid(row=0, column=0, padx=button_padx, pady=button_pady)
 		
-		self.butt_left = tk.Button(master, text="Left", command=self.changemode_left)
-		self.butt_left.grid(row=0, column=1)
+		self.butt_left = tk.Button(master, text="Left", command=lambda: self.changemode(0))
+		self.butt_left.grid(row=0, column=1, padx=button_padx, pady=button_pady)
 		
-		self.butt_center = tk.Button(master, text="Center", command=self.changemode_center)
-		self.butt_center.grid(row=0, column=2)
+		self.butt_center = tk.Button(master, text="Center", command=lambda: self.changemode(1))
+		self.butt_center.grid(row=0, column=2, padx=button_padx, pady=button_pady)
 		
-		self.butt_right = tk.Button(master, text="Right", command=self.changemode_right)
-		self.butt_right.grid(row=0, column=3)
+		self.butt_right = tk.Button(master, text="Right", command=lambda: self.changemode(2))
+		self.butt_right.grid(row=0, column=3, padx=button_padx, pady=button_pady)
 		
 		self.butt_off = tk.Button(master, text="OFF", command=self.inmoov_off)
-		self.butt_off.grid(row=0, column=4)
+		self.butt_off.grid(row=0, column=4, padx=button_padx, pady=button_pady)
 		
 		self.defaultcolor = "SystemButtonFace"
 		
@@ -100,28 +102,23 @@ class Application(tk.Frame):
 			# resolution: default 1, set lower for floatingpoint
 			# command: callback, gets value as only arg
 		
-		self.changemode_left()
-		
-		
+		self.changemode(0)
 		pass
 	
-	def changemode_left(self):
-		self.butt_left.config(bg="red")
-		self.butt_center.config(bg="SystemButtonFace")
-		self.butt_right.config(bg="SystemButtonFace")
-		self.changemode(0)
-	def changemode_center(self):
-		self.butt_left.config(bg="SystemButtonFace")
-		self.butt_center.config(bg="red")
-		self.butt_right.config(bg="SystemButtonFace")
-		self.changemode(1)
-	def changemode_right(self):
-		self.butt_left.config(bg="SystemButtonFace")
-		self.butt_center.config(bg="SystemButtonFace")
-		self.butt_right.config(bg="red")
-		self.changemode(2)
-	
 	def changemode(self, newmode):
+		if newmode==0:
+			self.butt_left.config(bg="red")
+		else:
+			self.butt_left.config(bg="SystemButtonFace")
+		if newmode==1:
+			self.butt_center.config(bg="red")
+		else:
+			self.butt_center.config(bg="SystemButtonFace")
+		if newmode==2:
+			self.butt_right.config(bg="red")
+		else:
+			self.butt_right.config(bg="SystemButtonFace")
+		
 		self.mode = newmode
 		n = 0
 		for n in range(len(self.names_all[self.mode])):
@@ -132,7 +129,7 @@ class Application(tk.Frame):
 			# min_angle, max_angle
 			tick = (s.max_angle - s.min_angle) / 4
 			# overwrite ranges & actual position of sliders
-			self.sliders[n].config(state=tk.NORMAL, from_=s.min_angle, to=s.max_angle, tickinterval=tick, length=fullsize)
+			self.sliders[n].config(state=tk.NORMAL, from_=s.min_angle, to=s.max_angle, tickinterval=tick, length=slider_fullsize)
 			self.sliders[n].set(self.current_values[self.mode][n])
 		for b in range(n+1, 10):
 			# disable all other sliders
@@ -141,18 +138,20 @@ class Application(tk.Frame):
 		
 	
 	def inmoov_off(self):
-		# make the actual inmoov turn off
+		# make the actual inmoov turn off for ALL servos, not just currently active tab
 		self.send_with_ros("off")
-		# # disable all sliders
+		# disable all sliders
 		for v in self.sliders:
 			v.config(state=tk.DISABLED, length=0)
 	
 	def inmoov_init(self):
-		# make the actual inmoov run init
+		# make the actual inmoov run init for ALL servos, not just currently active tab
 		self.send_with_ros("init")
-		# # enable all sliders
+		# enable all sliders
 		for n in range(len(self.names_all[self.mode])):
-			self.sliders[n].config(state=tk.NORMAL, length=fullsize)
+			self.sliders[n].config(state=tk.NORMAL, length=slider_fullsize)
+		# set all current_values to defaults
+		# set all displayed sliders to the corresponding defaults
 		for p in range(len(self.names_all)):
 			for n in range(len(self.names_all[p])):
 				s = self.inmoov.find_servo_by_name(self.names_all[p][n])
@@ -170,16 +169,21 @@ class Application(tk.Frame):
 				self.current_values[self.mode][i] = c
 				n = self.names_all[self.mode][i]
 				self.send_with_ros(n + "!" + str(c))
-	
+
+	# def slider_change(self, which):
+	# 	# know which slider because of lambda arg
+	# 	# use this to access the name & value, update tracked value, then combine & send
+	# 	c = self.sliders[which].get()
+	# 	self.current_values[self.mode][which] = c
+	# 	n = self.names_all[self.mode][which]
+	# 	self.send_with_ros(n + "!" + str(c))
+
 	def send_with_ros(self, message):
 		print(message)
 		# TODO: ROS everything
 	
-	
-	def say_hi(self):
-		print("hi there, everyone!")
-
-root = tk.Tk()
-app = Application(master=root)
-app.mainloop()
+if __name__ == '__main__':
+	root = tk.Tk()
+	app = Application(master=root)
+	app.mainloop()
 
