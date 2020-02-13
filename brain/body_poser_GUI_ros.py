@@ -1,7 +1,10 @@
+#!/usr/bin/env python
 import tkinter as tk
 import sys
 sys.path.append("../body/src/")
 import Inmoov
+import rospy
+import std_msgs.msg as rosmsg
 
 
 # slider
@@ -17,7 +20,6 @@ import Inmoov
 # all sliders have the same callback function: check all sliders to see which slider(s) have changed and send them over ROS
 # know it is changed by checking against the appropriate "current value" list
 
-# TODO: import ROS libraries, set up ROS node, write code to publish string to node
 
 slider_fullsize = 500
 button_padx = 50
@@ -179,11 +181,21 @@ class Application(tk.Frame):
 	# 	self.send_with_ros(n + "!" + str(c))
 
 	def send_with_ros(self, message):
-		print(message)
-		# TODO: ROS everything
+		# i'm concerned that this might be sending too many messages over ROS, but oh well, we wont' know until we try
+		if not rospy.is_shutdown():
+			# print(message)
+			rospy.loginfo(message)
+			pub.publish(message)
 	
 if __name__ == '__main__':
-	root = tk.Tk()
-	app = Application(master=root)
-	app.mainloop()
+	try:
+		pub = rospy.Publisher('bodyposer', rosmsg.String)
+		rospy.init_node('bodyposer_node', anonymous=True)
+		root = tk.Tk()
+		app = Application(master=root)
+		app.mainloop()
+	except rospy.ROSInterruptException:
+		print("oops")
+		
+
 

@@ -38,7 +38,7 @@ def main():
     # logging channel?
     rospy.init_node("body")
     rospy.on_shutdown(callback_onshutdown())
-    rospy.Subscriber("/motion", rosmsg.Int16, callback)
+    rospy.Subscriber("bodyposer", rosmsg.String, callback_onmessage_oneservocontrol)
     rospy.spin()
 
 if __name__ == "__main__":
