@@ -9,7 +9,7 @@
         "default_angle": 80,
         "notes": [
             "min = closed, max = open",
-            "2/7/2020"
+            "2/13/2020"
         ]
     },
     {
@@ -24,7 +24,7 @@
             "Flipped around compared to other fingers, doesnt move too well but its ok",
             "TODO: Needs to be looked internally, maybe string shortened, maybe more leverage to increase range of motion????",
             "210 = open, 445 = closed",
-            "2/7/2020"
+            "2/13/2020"
         ]
     },
     {
@@ -38,7 +38,7 @@
         "notes": [
             "max = open, min = closed",
             "TODO: base joint is broke, needs reprinted & then recalibrated",
-            "2/7/2020"
+            "2/13/2020"
         ]
     },
     {
@@ -51,7 +51,7 @@
         "default_angle": 80,
         "notes": [
             "max = open, min = closed",
-            "2/7/2020"
+            "2/13/2020"
         ]
     },
     {
@@ -66,7 +66,7 @@
             "min = closed, max = open",
             "For some reason the thumb doesn't get pulled open much when opening",
             "TODO: maybe the outer string needs shortened?",
-            "2/7/2020"
+            "2/13/2020"
         ]
     },
     {
@@ -82,205 +82,210 @@
             "TODO: Does not work needs to be looked at",
             "It was really hard to get to the write servo to look at it",
             "Does not turn",
-            "values Updated On:3/26/2018"
+            "2/13/2020"
         ]
     },
     {
         "id": 6,
         "body_part": "right_elbow",
-        "min_angle": -90,
+        "min_angle": 0,
         "max_angle": 90,
-        "min_pulse": 125,
-        "max_pulse": 300,
-        "default_angle": -90,
+        "min_pulse": 275,
+        "max_pulse": 125,
+        "default_angle": 10,
         "notes": [
             "previously Flexion",
             "free-spinning worm gear servo with external feedback potentiometer",
-            "Elbow, default is down",
-            "values Updated On:3/26/2018"
+            "275 = bent(up), 125 = straight(down), can actually reach ~300 but current draw shoots up like crazy",
+            "max draw ~1.0A",
+            "2/13/2020"
         ]
     },
     {
         "id": 7,
         "body_part": "right_shoulder_lift_out",
-        "min_angle": -90,
+        "min_angle": 0,
         "max_angle": 90,
-        "min_pulse": 165,
-        "max_pulse": 276,
-        "default_angle": -90,
+        "min_pulse": 155,
+        "max_pulse": 250,
+        "default_angle": 10,
         "notes": [
             "previously Abduction",
             "free-spinning worm gear servo with external feedback potentiometer????",
-            "values Updated On:3/26/2018",
+            "155 = in/down, 250 = out/up",
+            "2/13/2020",
             "rotate around Z axis? like wings, pos is out, max draw 1.2A"
         ]
     },
     {
         "id": 8,
         "body_part": "right_shoulder_lift_front",
-        "min_angle": -90,
+        "min_angle": -45,
         "max_angle": 90,
-        "min_pulse": 272,
-        "max_pulse": 550,
-        "default_angle": -20,
+        "min_pulse": 270,
+        "max_pulse": 540,
+        "default_angle": 0,
         "notes": [
             "previously rotation_servo_x",
             "free-spinning worm gear servo with external feedback potentiometer????",
+            "540 = up/front horizontal 90deg, 270 = down/back 45deg",
             "Lifts arm up, rotate around x axis, positive is forward",
-            "values Updated On:3/26/2018"
+            "2/13/2020"
         ]
     },
     {
         "id": 9,
         "body_part": "right_arm_rotate",
-        "min_angle": -90,
-        "max_angle": 90,
-        "min_pulse": 260,
-        "max_pulse": 471,
+        "min_angle": -45,
+        "max_angle": 135,
+        "min_pulse": 225,
+        "max_pulse": 470,
         "default_angle": 20,
         "notes": [
             "previously rotation_servo_y, AKA armtwist or twist",
             "free-spinning worm gear servo with external feedback potentiometer",
             "rotate arm around itself, pos out neg in, difficulty moving",
-            "Flipped",
-            "values Updated On:3/26/2018"
+            "low225 = -45deg front/in, high470 = 135deg back/out, 280 = straight front",
+            "2/13/2020"
         ]
     },
     
     {
         "id": 6,
         "body_part": "left_elbow",
-        "min_angle": -90,
+        "min_angle": 0,
         "max_angle": 90,
-        "min_pulse": 250,
-        "max_pulse": 370,
-        "default_angle": -90,
+        "min_pulse": 360,
+        "max_pulse": 250,
+        "default_angle": 10,
         "notes": [
-            "left Elbow, mechanically disconnected",
-            "values Updated On:3/26/2018"
+            "left Elbow",
+            "360 = bent/up, 250 = straight/down",
+            "2/13/2020"
         ]
     },
     {
         "id": 7,
         "body_part": "left_shoulder_lift_out",
-        "disabled": true,
-        "min_angle": -90,
+        "min_angle": 0,
         "max_angle": 90,
-        "min_pulse": 250,
-        "max_pulse": 325,
-        "default_angle": -90,
+        "min_pulse": 240,
+        "max_pulse": 300,
+        "default_angle": 10,
         "notes": [
-            "values Updated On:3/26/2018",
-            "z rotation, wing flapping, mechanically disconnected"
+            "2/13/2020",
+            "z rotation, wing flapping",
+            "240 = in/down, 300 = out/up"
         ]
     },
     {
         "id": 9,
         "body_part": "left_shoulder_lift_front",
-        "min_angle": -90,
+        "min_angle": -45,
         "max_angle": 90,
         "min_pulse": 330,
-        "max_pulse": 550,
-        "default_angle": -20,
+        "max_pulse": 540,
+        "default_angle": 0,
         "notes": [
             "Lifts arm up, positive is forward",
-            "values Updated On:3/26/2018"
+            "540 = fwd 90deg horizontal, 330 = back 45deg",
+            "2/13/2020"
         ]
     },
     {
         "id": 8,
         "body_part": "left_arm_rotate",
-        "disabled": true,
-        "min_angle": 90,
-        "max_angle": -90,
-        "min_pulse": 306,
-        "max_pulse": 471,
+        "min_angle": -45,
+        "max_angle": 135,
+        "min_pulse": 150,
+        "max_pulse": 450,
         "default_angle": 20,
         "notes": [
             "rotate arm around itself",
-            "Flipped, positive is in, negatitive is out, feedback needs rewiring, and recalibrating",
-            "values Updated On:3/26/2018"
+            "lower 150 = -45deg in/front, high 450 = 135deg out/back",
+            "2/13/2020"
         ]
     },
     {
         "id": 16,
         "body_part": "left_pinky",
-        "min_angle": 90,
-        "max_angle": -90,
-        "min_pulse": 110,
-        "max_pulse": 525,
-        "default_angle": 90,
+        "min_angle": 0,
+        "max_angle": 100,
+        "min_pulse": 520,
+        "max_pulse": 110,
+        "default_angle": 80,
         "notes": [
-            "default open, more negative is open",
-            "Flipped",
-            "values Updated On:3/26/2018"
+            "values flipped compared to other servos",
+            "min = closed, max = open",
+            "2/13/2020"
         ]
     },
     {
         "id": 16,
         "body_part": "left_ring",
-        "min_angle": -90,
-        "max_angle": 90,
-        "min_pulse": 105,
-        "max_pulse": 515,
-        "default_angle": 90,
+        "min_angle": 0,
+        "max_angle": 100,
+        "min_pulse": 100,
+        "max_pulse": 550,
+        "default_angle": 80,
         "notes": [
-            "more positive is closed",
-            "values Updated On:3/26/2018"
+            "min = closed, max = open",
+            "2/13/2020"
         ]
     },
     {
         "id": 16,
         "body_part": "left_mid",
-        "min_angle": -90,
-        "max_angle": 90,
-        "min_pulse": 140,
+        "min_angle": 0,
+        "max_angle": 100,
+        "min_pulse": 145,
         "max_pulse": 520,
-        "default_angle": 90,
+        "default_angle": 80,
         "notes": [
-            "more positive is open",
-            "values Updated On:3/26/2018"
+            "min = closed, max = open",
+            "2/13/2020"
         ]
     },
     {
         "id": 16,
         "body_part": "left_index",
-        "min_angle": -90,
-        "max_angle": 90,
+        "min_angle": 0,
+        "max_angle": 100,
         "min_pulse": 90,
         "max_pulse": 535,
-        "default_angle": 90,
+        "default_angle": 80,
         "notes": [
-            "more positive is open",
-            "values Updated On:3/26/2018"
+            "min = closed, max = open",
+            "2/13/2020"
         ]
     },
     {
         "id": 16,
         "body_part": "left_thumb",
-        "min_angle": 90,
-        "max_angle": -90,
-        "min_pulse": 220,
-        "max_pulse": 555,
-        "default_angle": 90,
+        "min_angle": 0,
+        "max_angle": 100,
+        "min_pulse": 560,
+        "max_pulse": 120,
+        "default_angle": 80,
         "notes": [
-            "more negative is open",
-            "Flipped",
-            "values Updated On:3/26/2018"
+            "values flipped compared to other servos",
+            "min = closed, max = open",
+            "all fingers seem quite slack, difficulty opening firmly",
+            "2/13/2020"
         ]
     },
     {
         "id": 16,
         "body_part": "left_wrist",
-        "min_angle": -90,
-        "max_angle": 90,
+        "min_angle": 0,
+        "max_angle": 100,
         "min_pulse": 110,
-        "max_pulse": 400,
-        "default_angle": 0,
+        "max_pulse": 530,
+        "default_angle": 10,
         "notes": [
             "Positive makes wrist turn inward, very small range of motion",
-            "NOTE: Makes noise",
-            "values Updated On:3/26/2018"
+            "110 = rotate outward, 530 = rotate inward",
+            "2/13/2020"
         ]
     },
     {
@@ -293,7 +298,7 @@
         "default_angle": 0,
         "notes": [
             "min = down, max = up",
-            "2/7/2020"
+            "2/13/2020"
         ]
     },
     {
@@ -306,7 +311,7 @@
         "default_angle": 0,
         "notes": [
             "min = right, max = left",
-            "2/7/2020"
+            "2/13/2020"
         ]
     },
     {
@@ -316,10 +321,10 @@
         "max_angle": 100,
         "min_pulse": 360,
         "max_pulse": 470,
-        "default_angle": 0,
+        "default_angle": 10,
         "notes": [
             "min = closed, max = open",
-            "2/7/2020"
+            "2/13/2020"
         ]
     },
     {
@@ -330,7 +335,8 @@
         "min_pulse": 140,
         "max_pulse": 500,
         "default_angle": 0,
-        "notes": ["Both torso have to move at the same time",
+        "notes": [
+            "Both torso have to move at the same time",
             "negative turns him left, but 0 is not center",
             "values Updated On:3/26/2018"]
     },
@@ -342,6 +348,8 @@
         "min_pulse": 140,
         "max_pulse": 500,
         "default_angle": 0,
-        "notes": ["negative turns him left, but 0 is not center","values Updated On:3/26/2018"]
+        "notes": [
+            "negative turns him left, but 0 is not center",
+            "values Updated On:3/26/2018"]
     }
 ]
