@@ -23,14 +23,19 @@ slider_fullsize = 500
 button_padx = 50
 button_pady = 8
 
+# create the INMOOV as a lazy way to parse the JSON and stuff
+# or when running locally, this actually instantiates & controls the servos
+my_inmoov = Inmoov.Inmoov()
+
 
 class Application(tk.Frame):
-	def __init__(self, master=None):
+	def __init__(self, master, on_change_callback):
 		tk.Frame.__init__(self, master)
-
-		# create the INMOOV as a lazy way to parse the JSON and stuff
 		
-		self.inmoov = Inmoov.Inmoov()
+		# this is the function to run when something changes and its time to send a message to ROS or inmoov
+		# this is a function that takes a single string
+		self.on_change_callback = on_change_callback
+		
 		self.mode = 0	# mode 0=left, 1=center, 2=right
 		
 		self.names_all = [["left_wrist",
@@ -64,7 +69,7 @@ class Application(tk.Frame):
 		for p in self.names_all:
 			self.current_values.append([])
 			for n in p:
-				s = self.inmoov.find_servo_by_name(n)
+				s = my_inmoov.find_servo_by_name(n)
 				self.current_values[-1].append(0)
 		
 		self.butt_init = tk.Button(master, text="INIT", command=self.inmoov_init)
@@ -82,7 +87,8 @@ class Application(tk.Frame):
 		self.butt_off = tk.Button(master, text="OFF", command=self.inmoov_off)
 		self.butt_off.grid(row=0, column=4, padx=button_padx, pady=button_pady)
 		
-		self.defaultcolor = "SystemButtonFace"
+		self.defaultcolor = self.butt_off.cget("background")
+		print(self.defaultcolor)
 		
 		# Scale.config(state=tk.DISABLED)
 		# Scale.config(state=tk.NORMAL)
@@ -109,15 +115,15 @@ class Application(tk.Frame):
 		if newmode==0:
 			self.butt_left.config(bg="red")
 		else:
-			self.butt_left.config(bg="SystemButtonFace")
+			self.butt_left.config(bg=self.defaultcolor)
 		if newmode==1:
 			self.butt_center.config(bg="red")
 		else:
-			self.butt_center.config(bg="SystemButtonFace")
+			self.butt_center.config(bg=self.defaultcolor)
 		if newmode==2:
 			self.butt_right.config(bg="red")
 		else:
-			self.butt_right.config(bg="SystemButtonFace")
+			self.butt_right.config(bg=self.defaultcolor)
 		
 		self.mode = newmode
 		n = 0
@@ -125,7 +131,7 @@ class Application(tk.Frame):
 			# overwrite labels
 			name = self.names_all[self.mode][n]
 			self.labels[n].config(text=name)
-			s = self.inmoov.find_servo_by_name(name)
+			s = my_inmoov.find_servo_by_name(name)
 			# min_angle, max_angle
 			tick = (s.max_angle - s.min_angle) / 4
 			# overwrite ranges & actual position of sliders
@@ -139,14 +145,14 @@ class Application(tk.Frame):
 	
 	def inmoov_off(self):
 		# make the actual inmoov turn off for ALL servos, not just currently active tab
-		self.send_with_ros("off")
+		self.on_change_callback("off")
 		# disable all sliders
 		for v in self.sliders:
 			v.config(state=tk.DISABLED, length=0)
 	
 	def inmoov_init(self):
 		# make the actual inmoov run init for ALL servos, not just currently active tab
-		self.send_with_ros("init")
+		self.on_change_callback("init")
 		# enable all sliders
 		for n in range(len(self.names_all[self.mode])):
 			self.sliders[n].config(state=tk.NORMAL, length=slider_fullsize)
@@ -154,7 +160,7 @@ class Application(tk.Frame):
 		# set all displayed sliders to the corresponding defaults
 		for p in range(len(self.names_all)):
 			for n in range(len(self.names_all[p])):
-				s = self.inmoov.find_servo_by_name(self.names_all[p][n])
+				s = my_inmoov.find_servo_by_name(self.names_all[p][n])
 				# set all my current value trackers to be defaults
 				self.current_values[p][n] = s.default_angle
 				if p == self.mode:
@@ -168,22 +174,24 @@ class Application(tk.Frame):
 				# if it has changed, then update its tracked val & send it via ROS
 				self.current_values[self.mode][i] = c
 				n = self.names_all[self.mode][i]
-				self.send_with_ros(n + "!" + str(c))
+				self.on_change_callback(n + "!" + str(c))
 
-	# def slider_change(self, which):
-	# 	# know which slider because of lambda arg
-	# 	# use this to access the name & value, update tracked value, then combine & send
-	# 	c = self.sliders[which].get()
-	# 	self.current_values[self.mode][which] = c
-	# 	n = self.names_all[self.mode][which]
-	# 	self.send_with_ros(n + "!" + str(c))
+def send_with_ros(message):
+	print(message)
+	# TODO: ROS everything
+	
+def actually_control_inmoov(message):
+	# if running on the actual inmoov bot, we can use this callback to bypass ROS and directly hand off the messages
+	print(message)
+	my_inmoov.set_servo_ros(message)
+	
+def launch_gui(on_change_callback):
+	root = tk.Tk()
+	app = Application(root, on_change_callback)
+	app.mainloop()
 
-	def send_with_ros(self, message):
-		print(message)
-		# TODO: ROS everything
 	
 if __name__ == '__main__':
-	root = tk.Tk()
-	app = Application(master=root)
-	app.mainloop()
+	# launch_gui(send_with_ros)
+	launch_gui(actually_control_inmoov)
 
