@@ -53,6 +53,8 @@ def set_pwm(shield_id: int, channel_id: int, pulse_off: int):
 
     # take the lock, set pwm, and release the lock
     with _i2c_lock:
+        if pwm_shields[shield_id] is None:
+            return pulse_off
         # actually do it, call .setPWM on the pwm object
         pwm_shields[shield_id].setPWM(channel_id, 0, pulse_off)
     return pulse_off

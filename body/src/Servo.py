@@ -219,7 +219,7 @@ class Servo(object):
                 self.curr_angle = None
                 self.curr_pwm = 0
                 set_pwm(self.shield_id, self.channel_id, 0)
-        except Exception as exception:
+        except ValueError as exception:
             print(exception)
             print("Could not turn off", self.name)
 
