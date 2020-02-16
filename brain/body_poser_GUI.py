@@ -2,6 +2,7 @@ import tkinter as tk
 import sys
 sys.path.append("../body/src/")
 import Inmoov
+import json_parsing as jp
 
 
 # slider
@@ -22,6 +23,8 @@ import Inmoov
 slider_fullsize = 500
 button_padx = 50
 button_pady = 8
+
+save_file = 'gestures.json'
 
 # create the INMOOV as a lazy way to parse the JSON and stuff
 # or when running locally, this actually instantiates & controls the servos
@@ -86,6 +89,12 @@ class Application(tk.Frame):
 		
 		self.butt_off = tk.Button(master, text="OFF", command=self.inmoov_off)
 		self.butt_off.grid(row=0, column=4, padx=button_padx, pady=button_pady)
+
+		self.name_entry = tk.Entry(master)
+		self.name_entry.grid(row=0, column=5, padx=button_padx, pady=button_pady)
+
+		self.butt_save = tk.Button(master, text="SAVE", command=self.save_values)
+		self.butt_save.grid(row=0, column=6, padx=button_padx, pady=button_pady)
 		
 		self.defaultcolor = self.butt_off.cget("background")
 		print(self.defaultcolor)
@@ -175,6 +184,25 @@ class Application(tk.Frame):
 				self.current_values[self.mode][i] = c
 				n = self.names_all[self.mode][i]
 				self.on_change_callback(n + "!" + str(c))
+
+	def save_values(self):
+		gesture = {}
+		save_name = self.name_entry.get()
+		if len(save_name) != 0:
+			current_gestures = jp.read_json(save_file)
+			if save_name in current_gestures:
+				print('Gesture already exsists')
+			else:
+				for n in range(len(self.names_all)):
+					for m in range(len(self.names_all[n])):
+						c = self.current_values[n][m]
+						gesture[self.names_all[n][m]] = c
+				jp.add_object_to_json(save_file, save_name, gesture)
+				#jp.pretty_print(save_file)
+				self.name_entry.delete(0, 'end')
+				print("Gesture saved as '" + save_name + "'")
+		else:
+			print('Please enter a gesture name.') 
 
 def send_with_ros(message):
 	print(message)
