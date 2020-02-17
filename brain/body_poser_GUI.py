@@ -18,7 +18,6 @@ import json_parsing as jp
 # all sliders have the same callback function: check all sliders to see which slider(s) have changed and send them over ROS
 # know it is changed by checking against the appropriate "current value" list
 
-# TODO: import ROS libraries, set up ROS node, write code to publish string to node
 
 slider_fullsize = 500
 button_padx = 50
@@ -91,10 +90,10 @@ class Application(tk.Frame):
 		self.butt_off.grid(row=0, column=4, padx=button_padx, pady=button_pady)
 
 		self.name_entry = tk.Entry(master)
-		self.name_entry.grid(row=0, column=5, padx=button_padx, pady=button_pady)
+		self.name_entry.grid(row=0, column=5, pady=button_pady)
 
 		self.butt_save = tk.Button(master, text="SAVE", command=self.save_values)
-		self.butt_save.grid(row=0, column=6, padx=button_padx, pady=button_pady)
+		self.butt_save.grid(row=0, column=6, padx=button_padx, pady=button_pady, sticky=tk.W)
 		
 		self.defaultcolor = self.butt_off.cget("background")
 		print(self.defaultcolor)
@@ -177,15 +176,28 @@ class Application(tk.Frame):
 					self.sliders[n].set(s.default_angle)
 	
 	def get_changed_sliders(self, x):
-		for i in range(len(self.names_all[self.mode])):
+		for i, n in enumerate(self.names_all[self.mode]):
 			c = self.sliders[i].get()
 			if c != self.current_values[self.mode][i]:
 				# if it has changed, then update its tracked val & send it via ROS
 				self.current_values[self.mode][i] = c
-				n = self.names_all[self.mode][i]
+				# n = self.names_all[self.mode][i]
 				self.on_change_callback(n + "!" + str(c))
+				# special corner case: moving one torso slider should also move the other!
+				if n == "left_torso":
+					v = self.names_all[self.mode].index("right_torso")
+					self.current_values[self.mode][v] = c
+					self.sliders[v].set(c)
+					self.on_change_callback("right_torso" + "!" + str(c))
+				elif n == "right_torso":
+					v = self.names_all[self.mode].index("left_torso")
+					self.current_values[self.mode][v] = c
+					self.sliders[v].set(c)
+					self.on_change_callback("left_torso" + "!" + str(c))
+		
 
 	def save_values(self):
+		# uses the name entered in the text box to append a new object onto the end of the existing "gestures.json" file
 		gesture = {}
 		save_name = self.name_entry.get()
 		if len(save_name) != 0:
@@ -204,10 +216,6 @@ class Application(tk.Frame):
 		else:
 			print('Please enter a gesture name.') 
 
-def send_with_ros(message):
-	print(message)
-	# TODO: ROS everything
-	
 def actually_control_inmoov(message):
 	# if running on the actual inmoov bot, we can use this callback to bypass ROS and directly hand off the messages
 	print(message)
