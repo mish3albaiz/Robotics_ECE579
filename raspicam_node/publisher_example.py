@@ -5,6 +5,9 @@
 # license removed for brevity
 import rospy
 from std_msgs.msg import String
+from picamera import PiCamera
+
+camera = PiCamera()
 
 def talker():
     pub = rospy.Publisher('chatter', String, queue_size=10)
@@ -13,6 +16,7 @@ def talker():
     while not rospy.is_shutdown():
         hello_str = "hello world %s" % rospy.get_time()
         rospy.loginfo(hello_str)
+        taken_image = camera.capture() # not sure if this works
         pub.publish(hello_str)
         rate.sleep()
 
