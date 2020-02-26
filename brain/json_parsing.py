@@ -21,3 +21,12 @@ def remove_object_from_json(filename, gesture_name):
 
 def pretty_print(filename):
     print(json.dumps(read_json(filename), indent=4, sort_keys=True))
+
+def change_object_from_json(filename, gesture_name, servo_name, servo_value):
+    data = read_json(filename)
+    data[gesture_name][servo_name] = servo_value
+    with open(filename, 'w') as json_file:
+        json.dump(data, json_file)
+    
+    
+    
