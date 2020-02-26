@@ -1,6 +1,6 @@
 [
     {
-        "id": 0,
+        "id": 38,
         "body_part": "right_pinky",
         "min_angle": 0,
         "max_angle": 100,
@@ -13,7 +13,7 @@
         ]
     },
     {
-        "id": 1,
+        "id": 37,
         "body_part": "right_ring",
         "min_angle": 0,
         "max_angle": 100,
@@ -28,7 +28,7 @@
         ]
     },
     {
-        "id": 2,
+        "id": 36,
         "body_part": "right_mid",
         "min_angle": 0,
         "max_angle": 100,
@@ -42,7 +42,7 @@
         ]
     },
     {
-        "id": 3,
+        "id": 35,
         "body_part": "right_index",
         "min_angle": 0,
         "max_angle": 100,
@@ -55,7 +55,7 @@
         ]
     },
     {
-        "id": 4,
+        "id": 5,
         "body_part": "right_thumb",
         "min_angle": 0,
         "max_angle": 100,
@@ -70,7 +70,7 @@
         ]
     },
     {
-        "id": 5,
+        "id": 39,
         "body_part": "right_wrist",
         "disabled": true,
         "min_angle": 0,
@@ -86,7 +86,7 @@
         ]
     },
     {
-        "id": 6,
+        "id": 34,
         "body_part": "right_elbow",
         "min_angle": 0,
         "max_angle": 90,
@@ -102,7 +102,7 @@
         ]
     },
     {
-        "id": 7,
+        "id": 32,
         "body_part": "right_shoulder_lift_out",
         "min_angle": 0,
         "max_angle": 90,
@@ -118,7 +118,7 @@
         ]
     },
     {
-        "id": 8,
+        "id": 1,
         "body_part": "right_shoulder_lift_front",
         "min_angle": -45,
         "max_angle": 90,
@@ -134,7 +134,7 @@
         ]
     },
     {
-        "id": 9,
+        "id": 33,
         "body_part": "right_arm_rotate",
         "min_angle": -45,
         "max_angle": 135,
@@ -149,9 +149,9 @@
             "2/13/2020"
         ]
     },
-    
+
     {
-        "id": 6,
+        "id": 18,
         "body_part": "left_elbow",
         "min_angle": 0,
         "max_angle": 90,
@@ -165,7 +165,7 @@
         ]
     },
     {
-        "id": 7,
+        "id": 0,
         "body_part": "left_shoulder_lift_out",
         "min_angle": 0,
         "max_angle": 90,
@@ -179,7 +179,7 @@
         ]
     },
     {
-        "id": 9,
+        "id": 16,
         "body_part": "left_shoulder_lift_front",
         "min_angle": -45,
         "max_angle": 90,
@@ -193,7 +193,7 @@
         ]
     },
     {
-        "id": 8,
+        "id": 17,
         "body_part": "left_arm_rotate",
         "min_angle": -45,
         "max_angle": 135,
@@ -207,7 +207,7 @@
         ]
     },
     {
-        "id": 16,
+        "id": 22,
         "body_part": "left_pinky",
         "min_angle": 0,
         "max_angle": 100,
@@ -221,7 +221,7 @@
         ]
     },
     {
-        "id": 16,
+        "id": 21,
         "body_part": "left_ring",
         "min_angle": 0,
         "max_angle": 100,
@@ -234,7 +234,7 @@
         ]
     },
     {
-        "id": 16,
+        "id": 20,
         "body_part": "left_mid",
         "min_angle": 0,
         "max_angle": 100,
@@ -247,7 +247,7 @@
         ]
     },
     {
-        "id": 16,
+        "id": 19,
         "body_part": "left_index",
         "min_angle": 0,
         "max_angle": 100,
@@ -260,7 +260,7 @@
         ]
     },
     {
-        "id": 16,
+        "id": 6,
         "body_part": "left_thumb",
         "min_angle": 0,
         "max_angle": 100,
@@ -275,7 +275,7 @@
         ]
     },
     {
-        "id": 16,
+        "id": 23,
         "body_part": "left_wrist",
         "min_angle": 0,
         "max_angle": 100,
@@ -289,7 +289,7 @@
         ]
     },
     {
-        "id": 13,
+        "id": 4,
         "body_part": "head_y",
         "min_angle": -90,
         "max_angle": 90,
@@ -302,7 +302,7 @@
         ]
     },
     {
-        "id": 14,
+        "id": 3,
         "body_part": "head_x",
         "min_angle": -90,
         "max_angle": 90,
@@ -315,7 +315,7 @@
         ]
     },
     {
-        "id": 15,
+        "id": 2,
         "body_part": "jaw",
         "min_angle": 0,
         "max_angle": 100,
@@ -328,7 +328,7 @@
         ]
     },
     {
-        "id": 21,
+        "id": 40,
         "body_part": "right_torso",
         "min_angle": -90,
         "max_angle": 90,
@@ -341,7 +341,7 @@
             "values Updated On:3/26/2018"]
     },
     {
-        "id": 22,
+        "id": 24,
         "body_part": "left_torso",
         "min_angle": -90,
         "max_angle": 90,
