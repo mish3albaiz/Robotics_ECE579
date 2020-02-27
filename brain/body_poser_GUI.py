@@ -1,6 +1,6 @@
-import tkinter as tk
+import Tkinter as tk
 import sys
-sys.path.append("../body/src/")
+sys.path.append("../scripts/")
 import Inmoov
 import json_parsing as jp
 

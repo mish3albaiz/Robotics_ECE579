@@ -26,12 +26,12 @@ from Servo import Servo
 class Finger(object):
     """ This class represents an Inmoov Finger. """
 
-    def __init__(self, servo: Servo):
+    def __init__(self, servo):
         if servo is None:
             raise Exception("Could not initialize Finger")
         self.servo = servo
 
-    def bend(self, degree: float):
+    def bend(self, degree):
         """ Alias for .rotate() on this servo, 0=close, 100=open """
         self.servo.rotate(degree)
 
@@ -53,7 +53,7 @@ class Finger(object):
 class Hand(object):
     """ This class represents an Inmoov Hand. """
 
-    def __init__(self, pinky: Finger, ring: Finger, mid: Finger, index: Finger, thumb: Finger):
+    def __init__(self, pinky, ring, mid, index, thumb):
         """ Build an Inmoov Hand """
         if pinky is None or ring is None or mid is None or index is None or thumb is None:
             raise Exception('Could not initialize Hand')
@@ -76,7 +76,7 @@ class Hand(object):
         if thumb is not None:
             self.thumb.bend(thumb)
             
-    def bend_all(self, deg: float):
+    def bend_all(self, deg):
         """ alias for calling .bend() will all finger values the same """
         v = [deg] * 5
         self.bend(*v)
@@ -119,7 +119,7 @@ class Wrist(object):
 
     # TODO: Pull apart Inmoov's forearm to find out servo models for a Wrist. These values are just copied from the HS-805BB Servo.
 
-    def __init__(self, servo: Servo):
+    def __init__(self, servo):
         """ Set the Servo for this Wrist """
 
         if servo is None:
@@ -220,7 +220,7 @@ class Arm(object):
     This hierarchy is unlikely to be final
     """
 
-    def __init__(self, hand: Hand, wrist: Servo, elbow: Servo, armtwist: Servo, lift_front: Servo, lift_out: Servo):
+    def __init__(self, hand, wrist, elbow, armtwist, lift_front, lift_out):
         """
         Build an Inmoov Arm
         """
@@ -261,7 +261,7 @@ class Torso(object):
     """ This class is used to control Inmoov's Torso """
     # TODO these need to be very precisely calibrated since they are fighting eachother
 
-    def __init__(self, left_servo: Servo, right_servo: Servo):
+    def __init__(self, left_servo, right_servo):
         """
         Initialize all of Inmoov's Torso variables.
         """
@@ -295,7 +295,7 @@ class Head(object):
     - TODO: Add mouth and eye control.
     """
     
-    def __init__(self, x_servo: Servo, y_servo: Servo, jaw: Servo):
+    def __init__(self, x_servo, y_servo, jaw):
         """ Initialize all Head Servos and look forward """
         if x_servo is None or y_servo is None or jaw is None:
             raise Exception("Could not initialize Head")

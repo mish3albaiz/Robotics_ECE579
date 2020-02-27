@@ -80,7 +80,7 @@ def Frame_Thread_Func(servo, DEBUG_SERVO_ID):
 # time between interpolated poses is very close to INTERPOLATE_TIME but not exactly
 # num_frames * frame_time exactly equals requested duration
 # minimum duration is INTERPOLATE_TIME, rounds up if it is less
-def interpolate(dest: float, curr: float, dur: float) -> list:
+def interpolate(dest, curr, dur):
 	# find the delta(s)
 	delta = dest - curr
 	# total time must not be less than INTERPOLATE_TIME

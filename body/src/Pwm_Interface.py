@@ -34,7 +34,7 @@ except ModuleNotFoundError:
 _i2c_lock = threading.Lock()
 
 # one function to set the PWM for any channel of any hat
-def set_pwm(shield_id: int, channel_id: int, pulse_off: int):
+def set_pwm(shield_id, channel_id, pulse_off):
     """ Set the pwm for the channel_id specified """
     
     # sanity-check values to be extra safe

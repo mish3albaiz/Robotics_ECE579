@@ -158,7 +158,7 @@ class Inmoov(object):
             disabled=d
         ))
 
-    def find_servo_by_name(self, name: str) -> Servo:
+    def find_servo_by_name(self, name):
         # in the global list "servos" find the Servo obj with x.name matching given name
         for i in self.all_servos:
             if name == i.name:
@@ -166,7 +166,7 @@ class Inmoov(object):
         print("ERR: FAIL TO FIND")
         return None
 
-    def set_servo_ros(self, cmd_string: str):
+    def set_servo_ros(self, cmd_string):
         # designed to interface with ROS, receive a string encoding the servo + position, set the relevant servo
         # this way we can run the interactive poser on a laptop or whatever
         if cmd_string == "off":

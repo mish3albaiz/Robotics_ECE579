@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+
+
 import sys
-sys.path.append("../body/src/")
 import body_poser_GUI
 import rospy
 import std_msgs.msg as rosmsg

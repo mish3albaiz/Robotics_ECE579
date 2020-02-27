@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sys
+print(sys.version)
 
 import rospy
 import std_msgs.msg as rosmsg  # pretty sure this is wrogn
@@ -37,7 +39,7 @@ def callback(msg):
 def main():
     # logging channel?
     rospy.init_node("body")
-    rospy.on_shutdown(callback_onshutdown())
+    rospy.on_shutdown(callback_onshutdown)
     rospy.Subscriber("bodyposer", rosmsg.String, callback_onmessage_oneservocontrol)
     rospy.spin()
 

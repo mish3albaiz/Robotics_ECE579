@@ -106,16 +106,16 @@ class Servo(object):
         # the only way to stop it is by stopping its parent, which means it must be a daemon!
         # it will be able to access all of this servos's other member variables and functions
         self.framethread_name = "framethread_" + self.name
-        self.framethread = threading.Thread(name=self.framethread_name, daemon=True,
+        self.framethread = threading.Thread(name=self.framethread_name,
                                             target=ft.Frame_Thread_Func, args=(self, DEBUG_SERVO_ID))
-        
+        self.framethread.daemon = True
 
         # start the thread, this should be the 2nd last operation of __init__
         self.framethread.start()
         # the servo begins as "off" until explicitly told to initialize it
         self.off()
         
-    def __str__(self) -> str:
+    def __str__(self):
         # self.name, self.id, self.channel_id, self.shield_id, self.min_pulse, self.max_pulse, self.min_angle, self.max_angle, self.default_angle, self.disabled
         # curr_angle, curr_pwm, curr_on
         s = "name={}, servo_id={}, channel_id={}, shield_id={}, min_pulse={}, max_pulse={}, min_angle={}, max_angle={}, default_angle={}, disabled={}\ncurr_angle={}, curr_pwm={}, curr_on={}"
@@ -125,7 +125,7 @@ class Servo(object):
 
 
 
-    def rotate(self, degree: float):
+    def rotate(self, degree):
         """
         Rotate to the specified degrees
         non-threading method of controlling the servo
@@ -142,7 +142,7 @@ class Servo(object):
             print("Could not rotate {} to {} degree").format(self.name, degree)
 
 
-    def rotate_thread(self, degree: float, durr: float):
+    def rotate_thread(self, degree, durr):
         """
         Rotate to the specified degrees gradually over the specified duration
         threading method of controlling the servo
@@ -183,7 +183,7 @@ class Servo(object):
             self.running_flag.set()
 
 
-    def do_set_angle(self, degree: float):
+    def do_set_angle(self, degree):
         """
         take angle after clamp, already known to be safe value
         convert to pwm, set actual pwm, also set "self.curr_x" values
@@ -233,7 +233,7 @@ class Servo(object):
 
 
 
-    def degrees_clamp(self, degree: float) -> float:
+    def degrees_clamp(self, degree):
         # clamp for safety
         degree_safe = bidirectional_clamp(degree, self.min_angle, self.max_angle)
         # warn if clamping actually occurred
@@ -241,7 +241,7 @@ class Servo(object):
             warnings.warn("Degree {} is out of range, clamping to safe value {}".format(degree, degree_safe))
         return degree_safe
     
-    def degrees_to_pulse(self, degree: float) -> int:
+    def degrees_to_pulse(self, degree):
         """ Map degree input value to a pulse length output value """
         # perform actual mapping
         pulse = int(linear_map(degree, self.min_angle, self.max_angle, self.min_pulse, self.max_pulse))
