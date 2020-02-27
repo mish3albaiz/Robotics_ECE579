@@ -19,17 +19,17 @@ def execute_animation(animation_id):
 	for key, servo_sequence_dictionary in animation_data.items():
 		print("***Executing pose {}***".format(str(key)))
 		
-		#Loop through the individual gester, setting each servo to its associated PWM for the current gesture
-		for pose_id, gesture_time_list in servo_sequence_dictionary.items():
+		#Loop through the individual gester, setting each servo to its associated PWM for the current pose
+		for pose_id, pose_time_list in servo_sequence_dictionary.items():
 			
 			#This is a string that identifies the pose to do
-			pose_name = gesture_time_list[0]
+			pose_name = pose_time_list[0]
 			
 			#Int value defining time to hold the pose
-			sleep_time = gesture_time_list[1]
+			sleep_time = pose_time_list[1]
 			
 			#Open up the file containing for the pose data
-			pose_file_data = read_json("gestures.json")
+			pose_file_data = read_json("pose.json")
 			
 			pose_data = {}
 			pose_data = pose_file_data[pose_name]
