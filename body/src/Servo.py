@@ -26,6 +26,7 @@ def bidirectional_clamp(val, a, b):
 
 # map a value along one range onto another range
 def linear_map(x_in_val, x1, x2, y1, y2):
+    x_in_val, x1, x2, y1, y2 = float(x_in_val), float(x1), float(x2), float(y1), float(y2)
     m = (y2 - y1) / (x2 - x1)
     b = y2 - m * x2
     return x_in_val * m + b

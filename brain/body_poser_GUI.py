@@ -155,8 +155,8 @@ class Application(tk.Frame):
 		# make the actual inmoov turn off for ALL servos, not just currently active tab
 		self.on_change_callback("off")
 		# disable all sliders
-		for v in self.sliders:
-			v.config(state=tk.DISABLED, length=0)
+		# for v in self.sliders:
+		# 	v.config(state=tk.DISABLED, length=0)
 	
 	def inmoov_init(self):
 		# make the actual inmoov run init for ALL servos, not just currently active tab
