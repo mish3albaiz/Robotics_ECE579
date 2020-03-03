@@ -52,7 +52,7 @@ class Application(tk.Frame):
     def add_pose(self):
         tk.Label(self.master, text = self.variable.get()).grid(row = self.current_row, column = 0)
         tk.Label(self.master, text = self.entry_time.get()).grid(row = self.current_row, column = 1)
-        self.PoseDict[(self.current_row-1)] = [self.variable.get(), self.entry_time.get()]
+        self.PoseDict[(self.current_row-2)] = [self.variable.get(), self.entry_time.get()]
         self.current_row = self.current_row + 1
 
     def save_animation(self):
