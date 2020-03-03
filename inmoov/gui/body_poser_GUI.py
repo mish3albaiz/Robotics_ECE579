@@ -4,7 +4,10 @@ try:
 except ModuleNotFoundError:
     import tkinter as tk
 import sys
-sys.path.append("../scripts/")
+from os.path import join, dirname
+whereami = dirname(__file__)
+scriptsdir = join(whereami, "../scripts/")
+sys.path.append(scriptsdir)
 import Inmoov
 import json_parsing as jp
 
@@ -27,7 +30,7 @@ slider_fullsize = 500
 button_padx = 50
 button_pady = 8
 
-save_file = '../json/gestures.json'
+save_file = join(whereami, '../json/gestures.json')
 
 # create the INMOOV as a lazy way to parse the JSON and stuff
 # or when running locally, this actually instantiates & controls the servos

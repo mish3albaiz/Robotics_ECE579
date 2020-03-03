@@ -1,12 +1,16 @@
 
 directly runnable files:
-	body_poser_GUI
-	body_poser_GUI_ros
-	pose_organization
-	animation_creator
-	body
-	workspace
-	head_node
+cd ~/catkin_ws/src/inmoov
+chmod +x gui/body_poser_GUI.py
+chmod +x gui/body_poser_GUI_ros.py
+chmod +x gui/pose_organization.py
+chmod +x gui/animation_creator.py
+chmod +x scripts/body.py
+chmod +x scripts/workspace.py
+chmod +x testing/manual_calibration.py
+
+WIP:
+head_node.py
 	
 these files need to have the python shebang at the top
 they also need to have execute permissions, chmod +x foobar.py
@@ -15,6 +19,7 @@ they execute with python 2.7 because that's what ROS uses
 probably also need to run dos2unix on them to clean them up
 sudo apt-get install dos2unix
 #dos2unix to fix line endings in some files
+dos2unix */*.py
 
 
 

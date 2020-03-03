@@ -4,8 +4,10 @@ try:
 except ModuleNotFoundError:
     import tkinter as tk
 import json_parsing as jp
+from os.path import join, dirname
+whereami = dirname(__file__)
 
-filename = '../json/pose.json'
+filename = join(whereami, '../json/pose.json')
 
 button_padx = 5
 button_pady = 5

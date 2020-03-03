@@ -5,7 +5,10 @@
 # outside the range the servos can actually reach
 
 import sys
-sys.path.append("../scripts/")
+from os.path import join, dirname
+whereami = dirname(__file__)
+scriptsdir = join(whereami, "../scripts/")
+sys.path.append(scriptsdir)
 import Inmoov
 from Servo import linear_map
 

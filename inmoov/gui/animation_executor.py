@@ -1,9 +1,11 @@
 
 from json_parsing import read_json
 import time
+from os.path import join, dirname
+whereami = dirname(__file__)
 
-filename_pose = '../json/pose.json'
-filename_animation = '../json/animations.json'
+filename_pose = join(whereami, '../json/pose.json')
+filename_animation = join(whereami, '../json/animations.json')
 
 
 # TODO: this function is a member of the inmoov object
