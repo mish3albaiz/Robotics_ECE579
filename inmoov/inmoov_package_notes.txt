@@ -1,0 +1,97 @@
+
+directly runnable files:
+	body_poser_GUI
+	body_poser_GUI_ros
+	pose_organization
+	animation_creator
+	body
+	workspace
+	head_node
+	
+these files need to have the python shebang at the top
+they also need to have execute permissions, chmod +x foobar.py
+they execute with python 2.7 because that's what ROS uses
+
+probably also need to run dos2unix on them to clean them up
+sudo apt-get install dos2unix
+#dos2unix to fix line endings in some files
+
+
+
+rosrun inmoov body_poser_GUI_ros.py
+rosrun inmoov body.py
+
+
+rosnode list
+rosnode cleanup
+rosnode ping my_turtle
+rosrun [package_name] [node_name]
+
+rosrun rqt_graph rqt_graph
+rostopic -h
+#http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics
+
+
+
+
+
+
+######################
+
+
+source /opt/ros/melodic/setup.bash
+# cmake catkin_pkg error:
+sudo apt-get install python-catkin-pkg
+pip3 install catkin_pkg
+echo "\nexport PYTHONPATH=$PYTHONPATH:/home/ubuntu/.local/lib/python3.5/site-packages" >> ~/.bashrc
+
+cd ~
+mkdir -p catkin_ws/src
+cd catkin_ws
+catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
+cd src
+catkin_create_pkg inmoov std_msgs rospy
+cd ..
+catkin_make
+
+source ~/catkin_ws/devel/setup.bash
+# customize the package.xml?
+
+
+cd ~/catkin_ws
+catkin_make
+source ~/catkin_ws/devel/setup.bash
+
+
+
+##########################
+
+# random notes & commands that may be useful
+# these should be 1-time only bringup operations
+
+systemctl list-unit-files
+
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+# set date
+sudo date +%Y%m%d -s "20200225"
+sudo apt-get update
+sudo apt-get upgrade
+
+# to autoconnect to wifi, need to use this: (still need to sign into guest wifi)
+sudo pifi set-hostname inmoov_head
+sudo pifi add "PSU Guest"
+
+# should synch with time after it connects to internet, may take ~20 minutes
+sudo apt-get install ntpdate
+sudo apt install ntp
+sudo systemctl enable ntp
+sudo timedatectl set-timezone America/Los_Angeles
+sudo timedatectl set-ntp 1
+
+# force time sync NOW:
+sudo systemctl stop ntp
+sudo ntpd -q -g
+sudo systemctl start ntp 
+
+pip install --upgrade pip
