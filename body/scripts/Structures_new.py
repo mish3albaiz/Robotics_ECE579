@@ -1,4 +1,3 @@
-#!/bin/python
 import time
 from Servo import Servo
 

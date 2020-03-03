@@ -1,4 +1,3 @@
-#!/bin/python
 """
 This module are Inmoov!
 

@@ -1,4 +1,3 @@
-#!/bin/python
 """
 This module holds the global pwm variable and any utility functions
 

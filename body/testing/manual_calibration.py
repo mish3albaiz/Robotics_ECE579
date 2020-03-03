@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 # this testing file is to directly set the angle/PWM values of a single servo
 # use extreme caution, this can easily damage the servos or drain the battery if specifying a PWM
