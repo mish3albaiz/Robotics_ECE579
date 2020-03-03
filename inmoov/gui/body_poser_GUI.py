@@ -30,7 +30,7 @@ slider_fullsize = 500
 button_padx = 50
 button_pady = 8
 
-save_file = join(whereami, '../json/gestures.json')
+save_file = join(whereami, '../json/pose.json')
 
 # create the INMOOV as a lazy way to parse the JSON and stuff
 # or when running locally, this actually instantiates & controls the servos
