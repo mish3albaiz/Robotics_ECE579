@@ -25,31 +25,31 @@ print("")
 print("Enter a non-numeric input to go back")
 
 while True:
-	# select which servo by name
-	r = input("Enter servo name:")
-	if r == "":
-		break
-	s = bot.find_servo_by_name(r)
-	# if servo is not found, then prompt again
-	if s is None:
-		continue
-	print(s)
-	# if servo is found, then print its min/max/current
-	print("MIN=%d, MAX=%d, CURR=%d" % (s.min_pulse, s.max_pulse, s.curr_pwm))
-	
-	while True:
-		# prompt for actual value
-		r = input("  PWM:")
-		P = -1
-		try:
-			P = int(r)
-		except ValueError:
-			# if given non-numeric input, go up a level
-			break
-		
-		# actually set the PWM, function actually wants degrees so first need to convert
-		deg = linear_map(P,s.min_pulse,s.max_pulse,s.min_angle,s.max_angle)
-		s.do_set_angle(deg)
-	
+    # select which servo by name
+    r = input("Enter servo name:")
+    if r == "":
+        break
+    s = bot.find_servo_by_name(r)
+    # if servo is not found, then prompt again
+    if s is None:
+        continue
+    print(s)
+    # if servo is found, then print its min/max/current
+    print("MIN=%d, MAX=%d, CURR=%d" % (s.min_pulse, s.max_pulse, s.curr_pwm))
+    
+    while True:
+        # prompt for actual value
+        r = input("  PWM:")
+        P = -1
+        try:
+            P = int(r)
+        except ValueError:
+            # if given non-numeric input, go up a level
+            break
+        
+        # actually set the PWM, function actually wants degrees so first need to convert
+        deg = linear_map(P,s.min_pulse,s.max_pulse,s.min_angle,s.max_angle)
+        s.do_set_angle(deg)
+    
 print("exiting")
 bot.off()
