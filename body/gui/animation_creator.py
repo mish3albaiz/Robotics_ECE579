@@ -1,7 +1,8 @@
 import tkinter as tk
 import json_parsing as jp
 
-filename = 'pose.json'
+filename_pose = '../json/pose.json'
+filename_animation = '../json/animations.json'
 
 button_padx = 5
 button_pady = 5
@@ -15,7 +16,7 @@ class Application(tk.Frame):
 
         self.PoseObj = {}
 
-        self.data = jp.read_json(filename)
+        self.data = jp.read_json(filename_pose)
 
         self.current_row = 3
 
@@ -49,7 +50,7 @@ class Application(tk.Frame):
         self.current_row = self.current_row + 1
 
     def save_animation(self):
-        jp.add_object_to_json('animations.json', self.entry_save.get(), self.PoseDict)
+        jp.add_object_to_json(filename_animation, self.entry_save.get(), self.PoseDict)
         print(self.entry_save.get() + 'animation has been saved.')
         self.__init__()        
 

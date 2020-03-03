@@ -2,6 +2,8 @@
 from json_parsing import read_json
 import time
 
+filename_pose = '../json/pose.json'
+filename_animation = '../json/animations.json'
 
 
 # TODO: this function is a member of the inmoov object
@@ -10,7 +12,7 @@ def execute_animation(animation_id):
 	
 	#Open up the JSON and get the high level dictionary containing a list of poses to execute
 	animation_data = {}
-	animation_data = read_json('animations.json')
+	animation_data = read_json(filename_animation)
 	
 	print("Executing animation ", str(animation_id))
 	
@@ -29,7 +31,7 @@ def execute_animation(animation_id):
 			sleep_time = pose_time_list[1]
 			
 			#Open up the file containing for the pose data
-			pose_file_data = read_json("pose.json")
+			pose_file_data = read_json(filename_pose)
 			
 			pose_data = {}
 			pose_data = pose_file_data[pose_name]

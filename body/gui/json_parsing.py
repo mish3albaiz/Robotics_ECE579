@@ -1,7 +1,5 @@
 import json
 
-my_file = 'simple.json'
-
 def read_json(filename):
     with open(filename) as f:
       data = json.load(f)

@@ -1,7 +1,7 @@
 import tkinter as tk
 import json_parsing as jp
 
-filename = 'pose.json'
+filename = '../json/pose.json'
 
 button_padx = 5
 button_pady = 5

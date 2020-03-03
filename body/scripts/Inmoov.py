@@ -14,7 +14,7 @@ from inspect import getsourcefile
 from os.path import abspath, join, dirname
 
 # all of the config data (min angle, max angle, channel, etc) is stored in this JSON file
-INMOOV_FILE = "inmoov_servo.json"
+INMOOV_FILE = "../json/inmoov_servo.json"
 
 
 '''
