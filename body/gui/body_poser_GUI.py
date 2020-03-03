@@ -1,4 +1,7 @@
-import Tkinter as tk
+try:
+	import Tkinter as tk
+except ModuleNotFoundError:
+	import tkinter as tk
 import sys
 sys.path.append("../scripts/")
 import Inmoov

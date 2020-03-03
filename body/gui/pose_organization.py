@@ -1,4 +1,7 @@
-import tkinter as tk
+try:
+    import Tkinter as tk
+except ModuleNotFoundError:
+    import tkinter as tk
 import json_parsing as jp
 
 filename = '../json/pose.json'
