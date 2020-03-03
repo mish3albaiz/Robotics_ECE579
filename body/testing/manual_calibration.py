@@ -4,7 +4,7 @@
 # outside the range the servos can actually reach
 
 import sys
-sys.path.append("../src/")
+sys.path.append("../scripts/")
 import Inmoov
 from Servo import linear_map
 
