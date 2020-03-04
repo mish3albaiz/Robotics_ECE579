@@ -3,8 +3,8 @@ directly runnable files:
 cd ~/catkin_ws/src/inmoov
 chmod +x gui/body_poser_GUI.py
 chmod +x gui/body_poser_GUI_ros.py
-chmod +x gui/pose_organization.py
-chmod +x gui/animation_creator.py
+chmod +x gui/pose_organization_GUI.py
+chmod +x gui/animation_creator_GUI.py
 chmod +x scripts/body.py
 chmod +x scripts/workspace.py
 chmod +x testing/manual_calibration.py
@@ -84,6 +84,7 @@ sudo apt-get update
 sudo apt-get upgrade
 
 # to autoconnect to wifi, need to use this: (still need to sign into guest wifi)
+https://learn.ubiquityrobotics.com/connect_network
 sudo pifi set-hostname inmoov_head
 sudo pifi add "PSU Guest"
 
