@@ -84,6 +84,7 @@ sudo apt-get update
 sudo apt-get upgrade
 
 # to autoconnect to wifi, need to use this: (still need to sign into guest wifi)
+# to sign in go to pdx.edu
 https://learn.ubiquityrobotics.com/connect_network
 sudo pifi set-hostname inmoov_head
 sudo pifi add "PSU Guest"
