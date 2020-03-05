@@ -55,9 +55,16 @@ def do_animation(animation_id):
 
     print("Executing animation ", str(animation_id))
 
-    for key, pose_info in sorted(animation_data[animation_id].items()):
+    #for key, pose_info in sorted(animation_data[animation_id].items()):
+    # this method better supports animations >= 10 frames long
+    # because using sorted() on 1-12 returns [1, 10, 11, 12, 2, 3, 4, 5, etc]
+    this_animation_dict = animation_data[animation_id]
+    t = 1
+    while str(t) in this_animation_dict:
+        pose_info = this_animation_dict[str(t)]
         print("\n********* Executing pose {} *********\n".format(str(pose_info[0])))
         do_pose(pose_info[0], pose_info[1])
+        t += 1
 
 
 def do_pose(pose_name, hold_time):
