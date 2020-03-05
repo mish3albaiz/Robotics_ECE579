@@ -14,7 +14,15 @@ from Servo import linear_map
 
 # this should set all servos to "off"
 bot = Inmoov.Inmoov()
+this_python_version = sys.version_info.major
 
+def my_input(asdf):
+    if this_python_version == 2:
+        # python 2
+        return raw_input(asdf)
+    if this_python_version == 3:
+        # python 3
+        return input(asdf)
 
 ###############################################################
 
@@ -30,7 +38,7 @@ print("Enter a non-numeric input to go back")
 
 while True:
     # select which servo by name
-    r = input("Enter servo name:")
+    r = my_input("Enter servo name:")
     if r == "":
         break
     s = bot.find_servo_by_name(r)
@@ -43,7 +51,7 @@ while True:
     
     while True:
         # prompt for actual value
-        r = input("  PWM:")
+        r = my_input("  PWM:")
         P = -1
         try:
             P = int(r)
