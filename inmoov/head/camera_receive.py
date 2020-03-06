@@ -21,7 +21,7 @@ def callback_onimage(msg):
 
 
 def main():
-    rospy.init_node('inmoov_head_receiver')
+    rospy.init_node('inmoov_head_receiver', anonymous=True)
     rospy.loginfo("bootup")
     
     rospy.Subscriber("/inmoov/head/image/compressed", CompressedImage, callback_onimage)

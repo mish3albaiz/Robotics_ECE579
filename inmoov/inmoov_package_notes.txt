@@ -103,3 +103,8 @@ sudo ntpd -q -g
 sudo systemctl start ntp 
 
 pip install --upgrade pip
+
+
+sudo apt-get install ros-kinetic-image-view
+
+
