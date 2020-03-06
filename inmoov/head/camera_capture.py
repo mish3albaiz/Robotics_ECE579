@@ -9,7 +9,6 @@ import picamera
 import cv2
 import numpy as np
 
-
 image_pub = None
 
 
@@ -48,7 +47,7 @@ def publish_image(image_np):
 def main():
     global image_pub
     rospy.init_node('inmoov_head')
-    image_pub = rospy.Publisher("/output/image_raw/compressed", CompressedImage)
+    image_pub = rospy.Publisher("/inmoov/head/image/compressed", CompressedImage)
     rate = rospy.Rate(2) # twice per second at most
     while not rospy.is_shutdown():
         img = capture_image()

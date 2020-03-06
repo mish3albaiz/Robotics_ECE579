@@ -37,6 +37,7 @@ rostopic -h
 #http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics
 
 
+rosrun image_view image_view image:=/inmoov/head/image _image_transport:=compressed
 
 
 

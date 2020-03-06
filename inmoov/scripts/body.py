@@ -38,9 +38,9 @@ def callback(msg):
 
 def main():
     # logging channel?
-    rospy.init_node("body")
+    rospy.init_node("bodyposer_receive")
     rospy.on_shutdown(callback_onshutdown)
-    rospy.Subscriber("bodyposer", rosmsg.String, callback_onmessage_oneservocontrol)
+    rospy.Subscriber("/inmoov/body/poser", rosmsg.String, callback_onmessage_oneservocontrol)
     rospy.spin()
 
 if __name__ == "__main__":

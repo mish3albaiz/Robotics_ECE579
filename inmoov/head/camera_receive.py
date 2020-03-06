@@ -24,7 +24,7 @@ def main():
     rospy.init_node('inmoov_head_receiver')
     rospy.loginfo("bootup")
     
-    rospy.Subscriber("/output/image_raw/compressed", CompressedImage, callback_onimage)
+    rospy.Subscriber("/inmoov/head/image/compressed", CompressedImage, callback_onimage)
     rospy.spin()
 
 
