@@ -216,7 +216,7 @@ class Servo(object):
         try:
             with self._curr_state_lock:
                 self.curr_on = False
-                self.curr_angle = None
+                #self.curr_angle = None
                 self.curr_pwm = 0
                 set_pwm(self.shield_id, self.channel_id, 0)
         except ValueError as exception:
@@ -238,7 +238,7 @@ class Servo(object):
         degree_safe = bidirectional_clamp(degree, self.min_angle, self.max_angle)
         # warn if clamping actually occurred
         if degree != degree_safe:
-            warnings.warn("Degree {} is out of range, clamping to safe value {}".format(degree, degree_safe))
+            print("Degree {} is out of range, clamping to safe value {}".format(degree, degree_safe))
         return degree_safe
     
     def degrees_to_pulse(self, degree):

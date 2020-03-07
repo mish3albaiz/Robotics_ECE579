@@ -2,6 +2,7 @@
     {
         "id": 38,
         "body_part": "right_pinky",
+	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 230,
@@ -15,6 +16,7 @@
     {
         "id": 37,
         "body_part": "right_ring",
+	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 445,
@@ -30,6 +32,7 @@
     {
         "id": 36,
         "body_part": "right_mid",
+	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 180,
@@ -44,6 +47,7 @@
     {
         "id": 35,
         "body_part": "right_index",
+	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 180,
@@ -57,6 +61,7 @@
     {
         "id": 5,
         "body_part": "right_thumb",
+	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 205,
@@ -88,6 +93,7 @@
     {
         "id": 34,
         "body_part": "right_elbow",
+	"disabled":true,
         "min_angle": 0,
         "max_angle": 90,
         "min_pulse": 275,
@@ -179,7 +185,7 @@
         ]
     },
     {
-        "id": 16,
+        "id":16 ,
         "body_part": "left_shoulder_lift_front",
         "min_angle": -45,
         "max_angle": 90,
