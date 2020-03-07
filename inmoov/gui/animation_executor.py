@@ -73,10 +73,11 @@ def do_animation(animation_id):
         t += 1
     print("\nANIMATION COMPLETE!\n")
 
-killtime = 1
+#killtime = 1
 killlist = ["left_shoulder_lift_front","left_arm_rotate","right_arm_rotate","right_shoulder_lift_front"]
 
 def do_pose(pose_name, hold_time):
+    killtime = 1
     hold_time = float(hold_time)
     pose_file_data = read_json(filename_pose)
     pose_data = {}
@@ -87,6 +88,8 @@ def do_pose(pose_name, hold_time):
         if fservo.curr_angle != servo_angle:
             fservo.rotate(int(servo_angle))
             print('Setting {} servo to an angle of {}'.format(servo_id, servo_angle))
+            if servo_id == 'right_lift_front':
+                killtime = abs((7.5/90)*(fservo.curr_angle - servo_angle))
         else:
             print('Skipping', servo_id)
             
@@ -101,7 +104,7 @@ def do_pose(pose_name, hold_time):
     
     time.sleep(hold_time - killtime)
     
-do_animation('rps')
+do_animation('rps_paper')
 time.sleep(5)
 exit()
 do_animation('headright_anim')
