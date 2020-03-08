@@ -26,7 +26,7 @@ import json_parsing as jp
 # know it is changed by checking against the appropriate "current value" list
 
 label_width = 20
-slider_width = 300
+slider_width = 500
 button_padx = 10
 button_pady = 10
 
@@ -85,6 +85,15 @@ class Application(tk.Frame):
         self.current_values = []
         for p in self.names_all:
             self.current_values.append([0] * len(p))
+        # current_states is same as current_values but for the checkboxes_vars
+        # disabled servos begin with this checkbox off
+        self.current_states = []
+        for p in self.names_all:
+            asdf = []
+            for n in p:
+                s = my_inmoov.find_servo_by_name(n)
+                asdf.append(int(not s.disabled))
+            self.current_states.append(asdf)
 
         #####################################
         # begin GUI setup
@@ -100,21 +109,21 @@ class Application(tk.Frame):
         self.frame_biggroup1 = tk.Frame(master)
         self.frame_biggroup1.pack(side=tk.TOP)
         
-        self.frame_tab_buttons = tk.Frame(self.frame_biggroup1, highlightbackground="black", highlightthickness=1)
-        # self.frame_tab_buttons = tk.Frame(self.frame_biggroup1, relief=tk.RAISED, borderwidth=1)
+        # self.frame_tab_buttons = tk.Frame(self.frame_biggroup1, highlightbackground="black", highlightthickness=1)
+        self.frame_tab_buttons = tk.Frame(self.frame_biggroup1, relief=tk.RAISED, borderwidth=1)
         self.frame_tab_buttons.pack(side=tk.LEFT, padx=10, pady=10)
-        self.butt_left = tk.Button(self.frame_tab_buttons, text="Left", width=button_width, command=lambda: self.changemode(0))
+        self.butt_left = tk.Button(self.frame_tab_buttons, text="Left", width=button_width, command=lambda: self.change_tab(0))
         self.butt_left.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
-        self.butt_center = tk.Button(self.frame_tab_buttons, text="Center", width=button_width, command=lambda: self.changemode(1))
+        self.butt_center = tk.Button(self.frame_tab_buttons, text="Center", width=button_width, command=lambda: self.change_tab(1))
         self.butt_center.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
-        self.butt_right = tk.Button(self.frame_tab_buttons, text="Right", width=button_width, command=lambda: self.changemode(2))
+        self.butt_right = tk.Button(self.frame_tab_buttons, text="Right", width=button_width, command=lambda: self.change_tab(2))
         self.butt_right.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
         
         self.frame_command_buttons = tk.Frame(self.frame_biggroup1, relief=tk.RAISED, borderwidth=1)
         self.frame_command_buttons.pack(side=tk.LEFT, pady=10)
-        self.butt_init = tk.Button(self.frame_command_buttons, text="INIT", width=button_width, command=self.inmoov_init)
+        self.butt_init = tk.Button(self.frame_command_buttons, text="INIT", width=button_width, command=self.allservos_init)
         self.butt_init.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
-        self.butt_off = tk.Button(self.frame_command_buttons, text="OFF", width=button_width, command=self.inmoov_off)
+        self.butt_off = tk.Button(self.frame_command_buttons, text="OFF", width=button_width, command=self.allservos_off)
         self.butt_off.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
 
         self.frame_posesave_widgets = tk.Frame(self.frame_biggroup1, relief=tk.RAISED, borderwidth=1)
@@ -138,13 +147,11 @@ class Application(tk.Frame):
         # frame that contains everything that isn't the above buttons
         self.frame_biggroup2 = tk.Frame(master)
         self.frame_biggroup2.pack(fill=tk.BOTH, expand=True)
-        # self.frame_biggroup2.pack(side=tk.TOP)
         
         # canvas holds a frame widget
-        canvas_width = int(slider_width + (7.5 * label_width)) # set the default and minimum width
+        canvas_width = int(slider_width + (7.5 * label_width) + 23) # set the default and minimum width
         self.canvas = tk.Canvas(self.frame_biggroup2, height=canvas_height, width=canvas_width)
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        # self.canvas.pack(side=tk.LEFT)
 
         # scrollbar
         # change the canvas when the scrollbar is scrolled
@@ -153,7 +160,7 @@ class Application(tk.Frame):
         # set the scrollbar when something changes the canvas (window resizing)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         # not totally sure what this does, gets called when the canvas is resized (window resizing)
-        self.canvas.bind('<Configure>', self.on_configure)
+        self.canvas.bind('<Configure>', self.update_canvas_size)
 
         # --- put frame in canvas ---
         self.frame_servolist = tk.Frame(self.canvas)
@@ -162,30 +169,40 @@ class Application(tk.Frame):
         # --- add widgets in frame ---
         self.sliders = []
         self.labels = []
+        self.checkboxes = []
+        self.checkboxes_vars = []
         for i in range(self.maxtablistlength):
             w = tk.Label(self.frame_servolist, text="Hello Tkinter!" + str(i), width=label_width)
             w.grid(row=i, column=0)
             self.labels.append(w)
-            s = tk.Scale(self.frame_servolist, from_=0, to=200, length=slider_width, tickinterval=30, orient=tk.HORIZONTAL, command=self.get_changed_sliders)
+            
+            s = tk.Scale(self.frame_servolist, from_=0, to=200, length=slider_width, tickinterval=30,
+                         orient=tk.HORIZONTAL, command=self.get_changed_sliders)
             s.grid(row=i, column=1)
             self.sliders.append(s)
-            # TODO: checkboxes
             
+            var = tk.IntVar()
+            c = tk.Checkbutton(self.frame_servolist, variable=var, text="", command=self.get_changed_checkbox)
+            # var.set(1) # turn the button on by default
+            c.grid(row=i, column=2)
+            self.checkboxes.append(c)
+            self.checkboxes_vars.append(var)
+
             # w.get() to return current slider val
             # w.set(x) to set initial value
             # resolution: default 1, set lower for floatingpoint
             # command: callback, gets value as only arg
 
-        self.changemode(0)
+        self.change_tab(0)
         # DONE WITH GUI INIT
         pass
 
-    def on_configure(self, event):
+    def update_canvas_size(self, event):
         print("configure canvas")
         # update scrollregion after starting 'mainloop' when all widgets are in canvas
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
 
-    def changemode(self, newmode):
+    def change_tab(self, newmode):
         if newmode==0:
             self.butt_left.config(bg="red")
         else:
@@ -201,31 +218,44 @@ class Application(tk.Frame):
 
         self.mode = newmode
         n = 0
-        # TODO: treat json-disabled servos differently somehow?
         for n in range(len(self.names_all[self.mode])):
             # overwrite labels
             name = self.names_all[self.mode][n]
-            self.labels[n].config(text=name)
             s = my_inmoov.find_servo_by_name(name)
-            # min_angle, max_angle
-            tick = float(s.max_angle - s.min_angle) / 4.0
-            # overwrite ranges & actual position of sliders
-            self.sliders[n].config(state=tk.NORMAL, from_=s.min_angle, to=s.max_angle, tickinterval=tick, length=slider_width)
-            self.sliders[n].set(self.current_values[self.mode][n])
+            self.labels[n].config(text=name)
+            # update checkboxes
+            state = self.current_states[self.mode][n]
+            if s.disabled:
+                self.checkboxes_vars[n].set(0)
+                self.checkboxes[n].config(state=tk.DISABLED)
+            else:
+                self.checkboxes_vars[n].set(state)
+                self.checkboxes[n].config(state=tk.NORMAL)
+            # update sliders
+            if s.disabled:
+                self.sliders[n].config(state=tk.DISABLED, length=0)
+            else:
+                tick = float(s.max_angle - s.min_angle) / 4.0
+                # overwrite ranges & actual position of sliders
+                self.sliders[n].config(from_=s.min_angle, to=s.max_angle, tickinterval=tick,
+                                       state=tk.NORMAL, length=slider_width)
+                self.sliders[n].set(self.current_values[self.mode][n])
         for b in range(n+1, self.maxtablistlength):
             # disable all other sliders & wipe their labels
             self.labels[b].config(text="-----")
             self.sliders[b].config(state=tk.DISABLED, length=0)
+            self.checkboxes_vars[b].set(0)
+            self.checkboxes[b].config(state=tk.DISABLED)
 
-
-    def inmoov_off(self):
+    def allservos_off(self):
+        # note that off does not correspond to angle=0, so there's not much point updating the displayed sliders
         # make the actual inmoov turn off for ALL servos, not just currently active tab
         self.on_change_callback("off")
         # disable all sliders
         #for v in self.sliders:
         #	v.config(state=tk.DISABLED, length=0)
 
-    def inmoov_init(self):
+    def allservos_init(self):
         # make the actual inmoov run init for ALL servos, not just currently active tab
         self.on_change_callback("init")
         # enable all sliders
@@ -241,6 +271,14 @@ class Application(tk.Frame):
                 if p == self.mode:
                     # set current values of all active sliders to their defaults
                     self.sliders[n].set(s.default_angle)
+    
+    def get_changed_checkbox(self):
+        for i, n in enumerate(self.names_all[self.mode]):
+            c = self.checkboxes_vars[i].get()
+            if c != self.current_states[self.mode][i]:
+                # if it has changed, then update its tracked val
+                self.current_states[self.mode][i] = c
+        print(self.current_states)
 
     def get_changed_sliders(self, x):
         for i, n in enumerate(self.names_all[self.mode]):
@@ -271,15 +309,17 @@ class Application(tk.Frame):
             current_gestures = jp.read_json(save_file)
             if save_name in current_gestures:
                 print('Gesture already exsists')
+                # TODO: update gesture already in json?
             else:
                 for n in range(len(self.names_all)):
                     for m in range(len(self.names_all[n])):
-                        c = self.current_values[n][m]
-                        gesture[self.names_all[n][m]] = c
+                        if self.current_states[n][m]: # only add it to the pose if its checkbox is checked
+                            c = self.current_values[n][m] # get current slider value
+                            gesture[self.names_all[n][m]] = c # save it into dict
                 jp.add_object_to_json(save_file, save_name, gesture)
-                #jp.pretty_print(save_file)
-                self.name_entry.delete(0, 'end')
-                print("Gesture saved as '" + save_name + "'")
+                self.name_entry.delete(0, 'end') # delete the text in the text-entry box
+                totalnumservos = sum([len(x) for x in self.names_all])
+                print("Gesture saved as '%s', sets %d / %d servos" % (save_name, len(gesture), totalnumservos))
         else:
             print('Please enter a gesture name.')
 
@@ -295,5 +335,4 @@ def launch_gui(on_change_callback):
 
 
 if __name__ == '__main__':
-    # launch_gui(send_with_ros)
     launch_gui(actually_control_inmoov)
