@@ -25,10 +25,14 @@ import json_parsing as jp
 # all sliders have the same callback function: check all sliders to see which slider(s) have changed and send them over ROS
 # know it is changed by checking against the appropriate "current value" list
 
+label_width = 20
+slider_width = 300
+button_padx = 10
+button_pady = 10
 
-slider_fullsize = 500
-button_padx = 50
-button_pady = 8
+button_width = 5        # not sure what units this is using
+
+canvas_height = 400
 
 save_file = join(whereami, '../json/pose.json')
 
@@ -73,58 +77,113 @@ class Application(tk.Frame):
                             "right_shoulder_lift_front",
                             "right_arm_rotate"]]
 
-        # current_values is initiallized with all zeros
+        self.maxtablistlength = 0     # the most servos in a tab
+        for namelist in self.names_all:
+            self.maxtablistlength = max(self.maxtablistlength, len(namelist))
+        # current_values is initiallized with all zeros, in the same shape as self.names_all
+        # used to determine which changed when something changed, also to know what to display when loading a tab
         self.current_values = []
         for p in self.names_all:
-            self.current_values.append([])
-            for n in p:
-                s = my_inmoov.find_servo_by_name(n)
-                self.current_values[-1].append(0)
+            self.current_values.append([0] * len(p))
 
-        self.butt_init = tk.Button(master, text="INIT", command=self.inmoov_init)
-        self.butt_init.grid(row=0, column=0, padx=button_padx, pady=button_pady)
+        #####################################
+        # begin GUI setup
+        # structure:
+        # one frame for all buttons stacked vertically with one frame for the scrollbar stuff
+        # inside buttons frame, everything packed horizontally
+        # buttons grouped with visible borders to show things that are related:
+        # left/right/center buttons inside a frame with a visible border
+        # init/off buttons inside a frame with a visible border
+        # name/save field/button inside a frame with a visible border
+        
+        # buttons for control & stuff
+        self.frame_biggroup1 = tk.Frame(master)
+        self.frame_biggroup1.pack(side=tk.TOP)
+        
+        self.frame_tab_buttons = tk.Frame(self.frame_biggroup1, highlightbackground="black", highlightthickness=1)
+        # self.frame_tab_buttons = tk.Frame(self.frame_biggroup1, relief=tk.RAISED, borderwidth=1)
+        self.frame_tab_buttons.pack(side=tk.LEFT, padx=10, pady=10)
+        self.butt_left = tk.Button(self.frame_tab_buttons, text="Left", width=button_width, command=lambda: self.changemode(0))
+        self.butt_left.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
+        self.butt_center = tk.Button(self.frame_tab_buttons, text="Center", width=button_width, command=lambda: self.changemode(1))
+        self.butt_center.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
+        self.butt_right = tk.Button(self.frame_tab_buttons, text="Right", width=button_width, command=lambda: self.changemode(2))
+        self.butt_right.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
+        
+        self.frame_command_buttons = tk.Frame(self.frame_biggroup1, relief=tk.RAISED, borderwidth=1)
+        self.frame_command_buttons.pack(side=tk.LEFT, pady=10)
+        self.butt_init = tk.Button(self.frame_command_buttons, text="INIT", width=button_width, command=self.inmoov_init)
+        self.butt_init.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
+        self.butt_off = tk.Button(self.frame_command_buttons, text="OFF", width=button_width, command=self.inmoov_off)
+        self.butt_off.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
 
-        self.butt_left = tk.Button(master, text="Left", command=lambda: self.changemode(0))
-        self.butt_left.grid(row=0, column=1, padx=button_padx, pady=button_pady)
+        self.frame_posesave_widgets = tk.Frame(self.frame_biggroup1, relief=tk.RAISED, borderwidth=1)
+        self.frame_posesave_widgets.pack(side=tk.LEFT, padx=10, pady=10)
+        self.name_entry = tk.Entry(self.frame_posesave_widgets)
+        self.name_entry.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
+        self.butt_save = tk.Button(self.frame_posesave_widgets, text="SAVE", width=button_width, command=self.save_values)
+        self.butt_save.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
 
-        self.butt_center = tk.Button(master, text="Center", command=lambda: self.changemode(1))
-        self.butt_center.grid(row=0, column=2, padx=button_padx, pady=button_pady)
-
-        self.butt_right = tk.Button(master, text="Right", command=lambda: self.changemode(2))
-        self.butt_right.grid(row=0, column=3, padx=button_padx, pady=button_pady)
-
-        self.butt_off = tk.Button(master, text="OFF", command=self.inmoov_off)
-        self.butt_off.grid(row=0, column=4, padx=button_padx, pady=button_pady)
-
-        self.name_entry = tk.Entry(master)
-        self.name_entry.grid(row=0, column=5, pady=button_pady)
-
-        self.butt_save = tk.Button(master, text="SAVE", command=self.save_values)
-        self.butt_save.grid(row=0, column=6, padx=button_padx, pady=button_pady, sticky=tk.W)
-
+        # the default color always looks the same but has different names on different platforms
         self.defaultcolor = self.butt_off.cget("background")
         print(self.defaultcolor)
 
         # Scale.config(state=tk.DISABLED)
         # Scale.config(state=tk.NORMAL)
         # Label.config(text="asdf")
+
+        ###########################################################################
+        # build & fill the scrollbar region
+        
+        # frame that contains everything that isn't the above buttons
+        self.frame_biggroup2 = tk.Frame(master)
+        self.frame_biggroup2.pack(fill=tk.BOTH, expand=True)
+        # self.frame_biggroup2.pack(side=tk.TOP)
+        
+        # canvas holds a frame widget
+        canvas_width = int(slider_width + (7.5 * label_width)) # set the default and minimum width
+        self.canvas = tk.Canvas(self.frame_biggroup2, height=canvas_height, width=canvas_width)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        # self.canvas.pack(side=tk.LEFT)
+
+        # scrollbar
+        # change the canvas when the scrollbar is scrolled
+        self.scrollbar = tk.Scrollbar(self.frame_biggroup2, command=self.canvas.yview)
+        self.scrollbar.pack(side=tk.LEFT, fill='y')
+        # set the scrollbar when something changes the canvas (window resizing)
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        # not totally sure what this does, gets called when the canvas is resized (window resizing)
+        self.canvas.bind('<Configure>', self.on_configure)
+
+        # --- put frame in canvas ---
+        self.frame_servolist = tk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.frame_servolist, anchor='nw')
+
+        # --- add widgets in frame ---
         self.sliders = []
         self.labels = []
-        for i in range(10):
-            w = tk.Label(master, text="Hello Tkinter!" + str(i))
-            w.grid(row=i+1, column=0)
+        for i in range(self.maxtablistlength):
+            w = tk.Label(self.frame_servolist, text="Hello Tkinter!" + str(i), width=label_width)
+            w.grid(row=i, column=0)
             self.labels.append(w)
-            s = tk.Scale(master, from_=0, to=200, length=600, tickinterval=30, orient=tk.HORIZONTAL, command=self.get_changed_sliders)
-            s.grid(row=i+1, column=1, columnspan=4)
-
+            s = tk.Scale(self.frame_servolist, from_=0, to=200, length=slider_width, tickinterval=30, orient=tk.HORIZONTAL, command=self.get_changed_sliders)
+            s.grid(row=i, column=1)
             self.sliders.append(s)
+            # TODO: checkboxes
+            
             # w.get() to return current slider val
             # w.set(x) to set initial value
             # resolution: default 1, set lower for floatingpoint
             # command: callback, gets value as only arg
 
         self.changemode(0)
+        # DONE WITH GUI INIT
         pass
+
+    def on_configure(self, event):
+        print("configure canvas")
+        # update scrollregion after starting 'mainloop' when all widgets are in canvas
+        self.canvas.configure(scrollregion=self.canvas.bbox('all'))
 
     def changemode(self, newmode):
         if newmode==0:
@@ -142,6 +201,7 @@ class Application(tk.Frame):
 
         self.mode = newmode
         n = 0
+        # TODO: treat json-disabled servos differently somehow?
         for n in range(len(self.names_all[self.mode])):
             # overwrite labels
             name = self.names_all[self.mode][n]
@@ -150,10 +210,10 @@ class Application(tk.Frame):
             # min_angle, max_angle
             tick = float(s.max_angle - s.min_angle) / 4.0
             # overwrite ranges & actual position of sliders
-            self.sliders[n].config(state=tk.NORMAL, from_=s.min_angle, to=s.max_angle, tickinterval=tick, length=slider_fullsize)
+            self.sliders[n].config(state=tk.NORMAL, from_=s.min_angle, to=s.max_angle, tickinterval=tick, length=slider_width)
             self.sliders[n].set(self.current_values[self.mode][n])
-        for b in range(n+1, 10):
-            # disable all other sliders
+        for b in range(n+1, self.maxtablistlength):
+            # disable all other sliders & wipe their labels
             self.labels[b].config(text="-----")
             self.sliders[b].config(state=tk.DISABLED, length=0)
 
@@ -170,7 +230,7 @@ class Application(tk.Frame):
         self.on_change_callback("init")
         # enable all sliders
         for n in range(len(self.names_all[self.mode])):
-            self.sliders[n].config(state=tk.NORMAL, length=slider_fullsize)
+            self.sliders[n].config(state=tk.NORMAL, length=slider_width)
         # set all current_values to defaults
         # set all displayed sliders to the corresponding defaults
         for p in range(len(self.names_all)):
