@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 try:
     import Tkinter as tk
+    import tkFont as tkFont
 except ModuleNotFoundError:
     import tkinter as tk
+    from tkinter import font as tkFont
 import json_parsing as jp
 from os.path import join, dirname
 whereami = dirname(__file__)
 
 import time
 import animation_executor as ae
-
-from tkinter import font as tkFont
 
 filename_pose = join(whereami, '../json/pose.json')
 filename_animation = join(whereami, '../json/animations.json')
@@ -75,10 +75,10 @@ class Application(tk.Frame):
         self.listbox_widget = tk.Listbox(self.animation_frame)
         self.listbox_widget.grid(row = 5, columnspan = 3, sticky = 'wens', padx = 3, pady = 3)
 
-        self.reset_button = tk.Button(self.button_frame, text = 'Clear', command = lambda: self.clear_animation(), width = 10, bg = 'firebrick1')
+        self.reset_button = tk.Button(self.button_frame, text = 'CLEAR', command = lambda: self.clear_animation(), width = 10, bg = 'firebrick1')
         self.reset_button.grid(row = 0, column = 0)
 
-        self.execute_button = tk.Button(self.button_frame, text = 'Execute', command = lambda: self.execute_poses(), width = 10, bg = 'SpringGreen2')
+        self.execute_button = tk.Button(self.button_frame, text = 'EXECUTE', command = lambda: self.execute_poses(), width = 10, bg = 'SpringGreen2')
         self.execute_button.grid(row = 0, column = 1)
 
         self.button_frame.grid_columnconfigure(0, weight=1)
@@ -155,11 +155,9 @@ class Application(tk.Frame):
     def view_animation(self):
         pose_list = []
         self.listbox_widget.delete(0,tk.END)
-        i = 0
         for pose, pose_info in self.PoseDict.items():
-            pose_string = "{}. Hold {} pose for {} second(s)".format(i+1, pose_info[0], pose_info[1])
+            pose_string = "Hold {} pose for {} second(s)".format(pose_info[0], pose_info[1])
             pose_list.append(pose_string)
-            i = i + 1
         for entry in pose_list:
             self.listbox_widget.insert(tk.END, entry)
 
