@@ -9,10 +9,13 @@ import json
 import time
 from Servo import Servo
 from Structures_new import *
+import sys
 from os.path import join, dirname
+whereami = dirname(__file__)
+guidir = join(whereami, "../gui/")
+sys.path.append(guidir)
 import animation_executor
 
-whereami = dirname(__file__)
 # all of the config data (min angle, max angle, channel, etc) is stored in this JSON file
 # turns that filename into the absolute location of the json file
 inmoov_json_absolute = join(whereami, "../json/inmoov_servo.json")
