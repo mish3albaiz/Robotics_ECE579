@@ -10,6 +10,7 @@ import Frame_Thread as ft
 
 
 # prints an assload of debug statements for the servo with the specified ID
+# specifically only frame-thread debug statements
 # there is no servo with id -1 so that will turn off debugging
 DEBUG_SERVO_ID = -1
 
@@ -34,23 +35,37 @@ def linear_map(x_in_val, x1, x2, y1, y2):
 class Servo(object):
     """
     Servo stores the following values:
-        channel_id: The channel the Servo is connected to
+        shield_id: the # of the hat the servo is connected on
+        channel_id: the # of the channel on the hat the servo is connected on
+        servo_id: same as "id" from the json, used to derive shield_id and channel_id. should be unique
         min_pulse: The minimum pulse the Servo allows
         max_pulse: The maximum pulse the Servo allows
         min_angle: The minimum degree the Servo can rotate to
         max_angle: The maximum degree the Servo can rotate to
         default_angle: The rest(initial)position of the servo.
         name: The name of the servo
+        
+        framethread: handle for the background thread to manage gradual movement
+        state_flag_running: Event object to indicate the gradual movement is occurring
+        state_flag_idle: Event object to indicate the gradual movement is not occurring
+        frame_queue: list object filled by the main thread when gradual movement begins, and consumed by the background thread
+        curr_angle: track the angle the servo was last instructed to move to
+        curr_pwm: track the pwm the servo was last instructed to set to
+        curr_on: track the on/off state of the servo, exactly equivalent to bool(curr_pwm) in all cases
+        curr_state_lock: Lock object to ensure only 1 thread at a time touches the current angle/pwm trackers
+        state_flag_lock: Lock object to ensure only 1 thread at a time touches the running/idle flags
+        frame_queue_lock: Lock object to ensure only 1 thread at a time touches the frame_queue
+        
     """
 
     def __init__(self,
                  servo_id,
                  min_pulse,
                  max_pulse,
-                 min_angle=None,
-                 max_angle=None,
-                 default_angle=None,
-                 name="servo",
+                 min_angle,
+                 max_angle,
+                 default_angle,
+                 name,
                  disabled=False
                  ):
         
@@ -67,19 +82,18 @@ class Servo(object):
         self.max_angle = max_angle
         self.default_angle = default_angle
         self.name = name
-        # sanity checking, in case of typos in the config json
         if self.disabled:
             print("Warning: servo '%s' is disabled" % name)
         else:
-            # currently we do not prevent either degrees or pwm from being upside-down, this might change in future
-            # assert min_pulse <= max_pulse
-            # assert min_angle <= max_angle
-            assert 1 <= max_pulse <= 4096
-            assert 1 <= min_pulse <= 4096
-            assert 0 <= servo_id <= 47  # maximum is 3 hats, only 48 channels possible
-            assert -360 <= min_angle <= 360
-            assert -360 <= max_angle <= 360
-            assert min(min_angle, max_angle) <= default_angle <= max(min_angle, max_angle)
+            # sanity checking, in case of typos in the config json
+            assert min_angle < max_angle            # angle-space should never be upside-down
+            assert min_pulse != max_pulse           # linear_map function gets fucky if delta is zero
+            assert 1 <= max_pulse <= 4096           # range of possible values for pwm hat
+            assert 1 <= min_pulse <= 4096           # range of possible values for pwm hat
+            assert -360 <= min_angle <= 360         # range of possible angle values
+            assert -360 <= max_angle <= 360         # range of possible angle values
+            assert 0 <= servo_id <= 95              # nobody will ever need more than 6 hats
+            assert min_angle <= default_angle <= max_angle  # default angle within valid angle range
         
         # running/idle flags: normal Events can only wait for a rising edge, if I want to wait for a falling edge, i need to
         # set up a complementary system like this. also they're mostly being used as flags, not as "events", but whatever.
@@ -130,7 +144,9 @@ class Servo(object):
         non-threading method of controlling the servo
         perform safety clamp before passing to do_set_angle
         """
-        # todo: rename
+        if self.disabled:
+            return
+
         degree_safe = self.degrees_clamp(degree)
         # calling the non-threading control function should cancel any pending threading events
         self.abort()
@@ -148,6 +164,9 @@ class Servo(object):
         perform safety clamp, interpolate, append frames to frame queue, and sets running flag
         the thread will jump in with "do_set_servo_angle" when it is the correct time
         """
+        if self.disabled:
+            return
+
         # safety clamp
         dest = self.degrees_clamp(degree)
         
@@ -188,9 +207,6 @@ class Servo(object):
         convert to pwm, set actual pwm, also set "self.curr_x" values
         called by both threading and non-threading approaches
         """
-        
-        if self.disabled:
-            return
         
         pulse = self.degrees_to_pulse(degree)
 
