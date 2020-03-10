@@ -12,25 +12,21 @@ import Inmoov
 import json_parsing as jp
 
 
-# slider
-# button
-# text label
-# grid structure
+# sliders and checkboxes are only enabled/disabled during init and changetab
+# if a servo is disabled, its slider/box is disabled. period. no getting around it.
 
-# also 3 corresponding lists of current values, initialized with defaults
-# 3 lists of names of servos: right, left, center
-# for each list, search for those names & add to list
-# make 2 columns: left is names (of one list), right is sliders (columnspan=2)
-# 3 buttons at the top that let you change the displayed list, + 1 button for "reset" or "init" and 1 for "off"
-# all sliders have the same callback function: check all sliders to see which slider(s) have changed and send them over ROS
-# know it is changed by checking against the appropriate "current value" list
+# slider values are tracked with current_values, used to update sliders when changing tabs
+# also used to know which slider has changed when one changes
+# checkbox states are tracked with current_checkbox_states in the same way
+# if a box is unchecked, that servo will not be part of any saved pose
+# if a servo name is red, that servo is OFF and depowered. moving that servo will re-power it.
 
 label_width = 20
 slider_width = 500
 button_padx = 10
 button_pady = 10
-
 button_width = 5        # not sure what units this is using
+textentry_width = 20
 
 canvas_height = 400
 
@@ -85,16 +81,27 @@ class Application(tk.Frame):
         self.current_values = []
         for p in self.names_all:
             self.current_values.append([0] * len(p))
-        # current_states is same as current_values but for the checkboxes_vars
+        # current_checkbox_states is same as current_values but for the checkboxes_vars
         # disabled servos begin with this checkbox off
-        self.current_states = []
+        self.pose_init = {}
+        self.current_checkbox_states = []
+        self.current_onoff_states = []
         for p in self.names_all:
-            asdf = []
+            boxes = []
+            onoff = []
             for n in p:
                 s = my_inmoov.find_servo_by_name(n)
-                asdf.append(int(not s.disabled))
-            self.current_states.append(asdf)
+                self.pose_init[n] = s.default_angle
+                boxes.append(int(not s.disabled))
+                onoff.append(int(not s.disabled))
+            self.current_checkbox_states.append(boxes)
+            self.current_onoff_states.append(onoff)
 
+        print(self.current_checkbox_states)
+        
+        # applying an "empty pose" doesn't change any sliders, but it unchecks all checkboxes
+        self.pose_off = {}
+        
         #####################################
         # begin GUI setup
         # structure:
@@ -128,14 +135,17 @@ class Application(tk.Frame):
 
         self.frame_posesave_widgets = tk.Frame(self.frame_biggroup1, relief=tk.RAISED, borderwidth=1)
         self.frame_posesave_widgets.pack(side=tk.LEFT, padx=10, pady=10)
-        self.name_entry = tk.Entry(self.frame_posesave_widgets)
+        self.name_entry = tk.Entry(self.frame_posesave_widgets, width=textentry_width)
         self.name_entry.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
-        self.butt_save = tk.Button(self.frame_posesave_widgets, text="SAVE", width=button_width, command=self.save_values)
-        self.butt_save.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
+        self.butt_save = tk.Button(self.frame_posesave_widgets, text="Save", width=button_width, command=self.save_values)
+        self.butt_save.pack(side=tk.LEFT, pady=button_pady)
+        self.butt_load = tk.Button(self.frame_posesave_widgets, text="Load", width=button_width, command=self.load_values)
+        self.butt_load.pack(side=tk.LEFT, padx=button_padx, pady=button_pady)
 
         # the default color always looks the same but has different names on different platforms
-        self.defaultcolor = self.butt_off.cget("background")
-        print(self.defaultcolor)
+        self.defaultcolor_buttonback = self.butt_off.cget("background")
+        print(self.defaultcolor_buttonback)
+
 
         # Scale.config(state=tk.DISABLED)
         # Scale.config(state=tk.NORMAL)
@@ -193,6 +203,10 @@ class Application(tk.Frame):
             # resolution: default 1, set lower for floatingpoint
             # command: callback, gets value as only arg
 
+        # the default color always looks the same but has different names on different platforms
+        self.defaultcolor_font = self.labels[0].cget("fg")
+        print(self.defaultcolor_font)
+
         self.change_tab(0)
         # DONE WITH GUI INIT
         pass
@@ -206,15 +220,15 @@ class Application(tk.Frame):
         if newmode==0:
             self.butt_left.config(bg="red")
         else:
-            self.butt_left.config(bg=self.defaultcolor)
+            self.butt_left.config(bg=self.defaultcolor_buttonback)
         if newmode==1:
             self.butt_center.config(bg="red")
         else:
-            self.butt_center.config(bg=self.defaultcolor)
+            self.butt_center.config(bg=self.defaultcolor_buttonback)
         if newmode==2:
             self.butt_right.config(bg="red")
         else:
-            self.butt_right.config(bg=self.defaultcolor)
+            self.butt_right.config(bg=self.defaultcolor_buttonback)
 
         self.mode = newmode
         n = 0
@@ -223,8 +237,13 @@ class Application(tk.Frame):
             name = self.names_all[self.mode][n]
             s = my_inmoov.find_servo_by_name(name)
             self.labels[n].config(text=name)
+            # sete text color depending on on/off state
+            if self.current_onoff_states[self.mode][n]:
+                self.labels[n].config(fg=self.defaultcolor_font)
+            else:
+                self.labels[n].config(fg="red")
             # update checkboxes
-            state = self.current_states[self.mode][n]
+            state = self.current_checkbox_states[self.mode][n]
             if s.disabled:
                 self.checkboxes_vars[n].set(0)
                 self.checkboxes[n].config(state=tk.DISABLED)
@@ -251,34 +270,30 @@ class Application(tk.Frame):
         # note that off does not correspond to angle=0, so there's not much point updating the displayed sliders
         # make the actual inmoov turn off for ALL servos, not just currently active tab
         self.on_change_callback("off!")
-        # disable all sliders
-        #for v in self.sliders:
-        #	v.config(state=tk.DISABLED, length=0)
+        # pose_off doesn't change any slider values, but it does uncheck all checkboxes
+        self.apply_pose_to_gui(self.pose_off)
+        # turn all onoff states to off, and update all visible sliders
+        for l in self.labels:
+            l.config(fg="red")
+        self.current_onoff_states = []
+        for p in self.names_all:
+            self.current_onoff_states.append([0] * len(p))
+
 
     def allservos_init(self):
         # make the actual inmoov run init for ALL servos, not just currently active tab
         self.on_change_callback("init!")
-        # enable all sliders
-        for n in range(len(self.names_all[self.mode])):
-            self.sliders[n].config(state=tk.NORMAL, length=slider_width)
         # set all current_values to defaults
         # set all displayed sliders to the corresponding defaults
-        for p in range(len(self.names_all)):
-            for n in range(len(self.names_all[p])):
-                s = my_inmoov.find_servo_by_name(self.names_all[p][n])
-                # set all my current value trackers to be defaults
-                self.current_values[p][n] = s.default_angle
-                if p == self.mode:
-                    # set current values of all active sliders to their defaults
-                    self.sliders[n].set(s.default_angle)
+        self.apply_pose_to_gui(self.pose_init)
     
     def get_changed_checkbox(self):
         for i, n in enumerate(self.names_all[self.mode]):
             c = self.checkboxes_vars[i].get()
-            if c != self.current_states[self.mode][i]:
+            if c != self.current_checkbox_states[self.mode][i]:
                 # if it has changed, then update its tracked val
-                self.current_states[self.mode][i] = c
-        print(self.current_states)
+                self.current_checkbox_states[self.mode][i] = c
+        print(self.current_checkbox_states)
 
     def get_changed_sliders(self, x):
         for i, n in enumerate(self.names_all[self.mode]):
@@ -286,8 +301,10 @@ class Application(tk.Frame):
             if c != self.current_values[self.mode][i]:
                 # if it has changed, then update its tracked val & send it via ROS
                 self.current_values[self.mode][i] = c
-                # n = self.names_all[self.mode][i]
                 self.on_change_callback("servo!" + n + "!" + str(c))
+                # also update the text label color
+                self.current_onoff_states[self.mode][i] = 1
+                self.labels[i].config(fg=self.defaultcolor_font)
                 # special corner case: moving one torso slider should also move the other!
                 if n == "left_torso":
                     v = self.names_all[self.mode].index("right_torso")
@@ -305,23 +322,77 @@ class Application(tk.Frame):
         # uses the name entered in the text box to append a new object onto the end of the existing "gestures.json" file
         gesture = {}
         save_name = self.name_entry.get()
-        if len(save_name) != 0:
-            current_gestures = jp.read_json(save_file)
-            if save_name in current_gestures:
-                print('Gesture already exsists')
-                # TODO: update gesture already in json?
-            else:
-                for n in range(len(self.names_all)):
-                    for m in range(len(self.names_all[n])):
-                        if self.current_states[n][m]: # only add it to the pose if its checkbox is checked
-                            c = self.current_values[n][m] # get current slider value
-                            gesture[self.names_all[n][m]] = c # save it into dict
-                jp.add_object_to_json(save_file, save_name, gesture)
-                self.name_entry.delete(0, 'end') # delete the text in the text-entry box
-                totalnumservos = sum([len(x) for x in self.names_all])
-                print("Gesture saved as '%s', sets %d / %d servos" % (save_name, len(gesture), totalnumservos))
-        else:
-            print('Please enter a gesture name.')
+        if len(save_name) == 0:
+            # TODO: popup!
+            print('Please enter a pose name.')
+            return
+        current_gestures = jp.read_json(save_file)
+        if save_name in current_gestures:
+            print('Pose already exsists')
+            # TODO: popup! can we get a yes/no repsonse from the user?
+            return
+        for n in range(len(self.names_all)):
+            for m in range(len(self.names_all[n])):
+                if self.current_checkbox_states[n][m]: # only add it to the pose if its checkbox is checked
+                    c = self.current_values[n][m] # get current slider value
+                    gesture[self.names_all[n][m]] = c # save it into dict
+        jp.add_object_to_json(save_file, save_name, gesture)
+        self.name_entry.delete(0, 'end') # delete the text in the text-entry box
+        totalnumservos = sum([len(x) for x in self.names_all])
+        print("Pose saved as '%s', sets %d / %d servos" % (save_name, len(gesture), totalnumservos))
+            
+    def load_values(self):
+        # read the json, get the specified pose
+        load_name = self.name_entry.get()
+        if len(load_name) == 0:
+            # todo popup!
+            print('Please enter a pose name.')
+            return
+        current_poses = jp.read_json(save_file)
+        if load_name not in current_poses:
+            # todo popup!
+            print('Specified pose does not exist.')
+            return
+        loading_pose = current_poses[load_name]
+        # load/apply the pose to the GUI:
+        self.apply_pose_to_gui(loading_pose)
+        # send the pose to the physical robot
+        for name,val in loading_pose.items():
+            self.on_change_callback("servo!" + str(name) + "!" + str(float(val)))
+        return
+
+    def apply_pose_to_gui(self, dictpose):
+        # given a dict-pose, apply it to the gui
+        # firstly, ignore all disabled servos. don't touch their sliders or checkboxes.
+        # second, if a servo IS in the pose, then update its slider and set its checkbox=set.
+        # third, if a servo IS NOT in the pose, then set it checkbox=unset.
+        for n in range(len(self.names_all)):
+            for m in range(len(self.names_all[n])):
+                s = my_inmoov.find_servo_by_name(self.names_all[n][m])
+                if s.disabled:
+                    # dont change disabled servos at all, whether in background or active tab
+                    continue
+                if self.names_all[n][m] in dictpose:
+                    # if this servo is in the pose, then set its checkbox to checked
+                    self.current_checkbox_states[n][m] = 1
+                    # if this servo is in the pose, then set its text color to black
+                    self.current_onoff_states[n][m] = 1
+                    # if this servo is in the pose, then update its slider to match the value in it
+                    self.current_values[n][m] = dictpose[self.names_all[n][m]]
+                    if n == self.mode:
+                        # if in the visible tab, update the visible slider and visible checkbox and visible label
+                        self.labels[m].config(fg=self.defaultcolor_font)
+                        self.sliders[m].set(s.default_angle)
+                        self.checkboxes_vars[m].set(1)
+                else:
+                    # if the servo is not in the pose, then set its checkbox to unchecked
+                    self.current_checkbox_states[n][m] = 0
+                    if n == self.mode:
+                        # if in the visible tab, update the visible checkbox and label
+                        self.checkboxes_vars[m].set(0)
+                        self.labels[m].config(fg="red")
+                    # if the servo is not in the pose, then don't touch its sliders at all
+
 
 def actually_control_inmoov(message):
     # if running on the actual inmoov bot, we can use this callback to bypass ROS and directly hand off the messages
