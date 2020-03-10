@@ -71,19 +71,19 @@ def do_pose(the_inmoov, pose_name, hold_time=0):
         else:
             fservo.rotate(float(servo_angle))
             print('Setting {} servo to an angle of {}'.format(servo_name, servo_angle))
-            if servo_name == 'right_lift_front':
-                killtime = abs((7.5/90)*(fservo.curr_angle - servo_angle))
+#            if servo_name == 'right_lift_front':
+#                killtime = abs((7.5/90)*(fservo.curr_angle - servo_angle))
 
     print('\n--------------- Hold for {} second(s) ---------------'.format(hold_time))
 
-    # todo: handle corner case where hold_time < killtime
-    time.sleep(killtime)
-    # kill all servos that can safely hold position wihtout power
-    for killname in killlist:
-        fservo = this_inmoov.find_servo_by_name(str(killname))
-        fservo.off()
-    
-    time.sleep(hold_time - killtime)
+#    # todo: handle corner case where hold_time < killtime
+#    time.sleep(killtime)
+#    # kill all servos that can safely hold position wihtout power
+#    for killname in killlist:
+#        fservo = this_inmoov.find_servo_by_name(str(killname))
+#        fservo.off()
+#        time.sleep(hold_time - killtime)
+    time.sleep(hold_time)
     
 
 if __name__ == '__main__':
