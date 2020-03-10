@@ -5,9 +5,8 @@ Authors:
     Matty Baba Allos
 """
 from Pwm_Interface import set_pwm
-import warnings
 import threading
-import frame_thread as ft
+import Frame_Thread as ft
 
 
 # prints an assload of debug statements for the servo with the specified ID
@@ -84,22 +83,22 @@ class Servo(object):
         
         # running/idle flags: normal Events can only wait for a rising edge, if I want to wait for a falling edge, i need to
         # set up a complementary system like this. also they're mostly being used as flags, not as "events", but whatever.
-        self.running_flag = threading.Event()
-        self.idle_flag = threading.Event()
-        self.idle_flag.set()
+        self.state_flag_running = threading.Event()
+        self.state_flag_idle = threading.Event()
+        self.state_flag_idle.set()
         # i want setting one/clearing other to be an indivisible atomic operation so it should have a lock object just in case
-        self._state_flag_lock = threading.Lock()
+        self.state_flag_lock = threading.Lock()
         # the list of frames that the leg thread is consuming as the leg object is adding onto
         self.frame_queue = []
         # locking object to ensure no collisions happen around the frame queue
-        self._frame_queue_lock = threading.Lock()
+        self.frame_queue_lock = threading.Lock()
         # these variables track the state of the servo at any given instant
         self.curr_angle = 0.0
         self.curr_pwm = 0
         self.curr_on = False
         # locking object to ensure no collisions happen around self.curr_angle/self.curr_pwm/self.curr_on
         # might not be necessary but couldn't hurt, technically both the servo thread and servo object can write into them
-        self._curr_state_lock = threading.Lock()
+        self.curr_state_lock = threading.Lock()
 
         # create and launch the thread for this servo
         # note: this MUST be daemon type because the thread is designed to run forever...
@@ -107,7 +106,7 @@ class Servo(object):
         # it will be able to access all of this servos's other member variables and functions
         self.framethread_name = "framethread_" + self.name
         self.framethread = threading.Thread(name=self.framethread_name,
-                                            target=ft.Frame_Thread_Func, args=(self, DEBUG_SERVO_ID))
+                                            target=ft.frame_thread_func, args=(self, DEBUG_SERVO_ID))
         self.framethread.daemon = True
 
         # start the thread, this should be the 2nd last operation of __init__
@@ -155,7 +154,7 @@ class Servo(object):
         # if there is a queued interpolation frame, interpolate from the final frame in the queue to the desired pose.
         # otherwise, interpolate from current position.
         curr = None
-        with self._frame_queue_lock:
+        with self.frame_queue_lock:
             if len(self.frame_queue) > 0:
                 curr = self.frame_queue[-1][0]
         if curr is None:  # "else" but outside of the lock block
@@ -169,18 +168,18 @@ class Servo(object):
         interp_list = ft.interpolate(dest, curr, durr)
     
         # add new frames onto the END of the frame queue (with lock)
-        with self._frame_queue_lock:
+        with self.frame_queue_lock:
             # concatenate two lists with +
             self.frame_queue = self.frame_queue + interp_list
             if self.servo_id == DEBUG_SERVO_ID:
                 print("servo_%s: add %d frames, new length %d" % (self.name, len(interp_list), len(self.frame_queue)))
     
-        with self._state_flag_lock:
+        with self.state_flag_lock:
             # clear "sleeping" event, does not trigger anything (note: clear before set)
-            self.idle_flag.clear()
+            self.state_flag_idle.clear()
             # set the "running" event, this will trigger the thread to begin consuming frames
             # note: do this unconditionally! no harm in setting an already set flag
-            self.running_flag.set()
+            self.state_flag_running.set()
 
 
     def do_set_angle(self, degree):
@@ -195,7 +194,7 @@ class Servo(object):
         
         pulse = self.degrees_to_pulse(degree)
 
-        with self._curr_state_lock:
+        with self.curr_state_lock:
             self.curr_on = True
             self.curr_angle = degree
             self.curr_pwm = pulse
@@ -214,7 +213,7 @@ class Servo(object):
         # abort so it doesn't wake up after turning off until i explicitly tell it to wake up
         self.abort()
         try:
-            with self._curr_state_lock:
+            with self.curr_state_lock:
                 self.curr_on = False
                 #self.curr_angle = None
                 self.curr_pwm = 0
@@ -226,7 +225,7 @@ class Servo(object):
 
     # clear the frame queue to stop any currently-pending movements.
     def abort(self):
-        with self._frame_queue_lock:
+        with self.frame_queue_lock:
             self.frame_queue = []
 
 
@@ -235,7 +234,7 @@ class Servo(object):
 
     def degrees_clamp(self, degree):
         # clamp for safety
-        degree_safe = bidirectional_clamp(degree, self.min_angle, self.max_angle)
+        degree_safe = float(bidirectional_clamp(degree, self.min_angle, self.max_angle))
         # warn if clamping actually occurred
         if degree != degree_safe:
             print("Degree {} is out of range, clamping to safe value {}".format(degree, degree_safe))

@@ -20,20 +20,20 @@ import time
 INTERPOLATE_TIME = 0.1
 
 # uses the following members of "servo":
-# running_flag
-# idle_flag
-# _state_flag_lock
+# state_flag_running
+# state_flag_idle
+# state_flag_lock
 # frame_queue
-# _frame_queue_lock
+# frame_queue_lock
 # framethread (debugging)
 # id (debugging)
 # do_set_angle()
-def Frame_Thread_Func(servo, DEBUG_SERVO_ID):
+def frame_thread_func(servo, DEBUG_SERVO_ID):
     # looping forever
     while True:
 
         # wait until servo."running" event is set by servo object
-        servo.running_flag.wait()
+        servo.state_flag_running.wait()
 
         if servo.id == DEBUG_SERVO_ID:
             print("%s: thread wakeup" % servo.framethread_name)
@@ -42,7 +42,7 @@ def Frame_Thread_Func(servo, DEBUG_SERVO_ID):
             frame = None
             # if there are frames in the frame queue, pop one off (with lock). otherwise, break.
             # if an abort happened while sleeping, the queue will be empty and it will exit, no separate event needed.
-            with servo._frame_queue_lock:
+            with servo.frame_queue_lock:
                 if len(servo.frame_queue) > 0:
                     frame = servo.frame_queue.pop(0)
             if frame is None:   # "else" but outside of the lock block
@@ -64,12 +64,12 @@ def Frame_Thread_Func(servo, DEBUG_SERVO_ID):
         if servo.id == DEBUG_SERVO_ID:
             print("%s: thread sleep" % servo.framethread_name)
 
-        with servo._state_flag_lock:
+        with servo.state_flag_lock:
             # clear "running" event, does not trigger anything (note: clear before set)
-            servo.running_flag.clear()
+            servo.state_flag_running.clear()
             # set the "sleeping" event, this may trigger other waiting tasks
-            servo.idle_flag.set()
-        # loop back to top, wait until running_flag is set again
+            servo.state_flag_idle.set()
+        # loop back to top, wait until state_flag_running is set again
         pass
     pass
 
