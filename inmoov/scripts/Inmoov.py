@@ -16,29 +16,7 @@ whereami = dirname(__file__)
 # turns that filename into the absolute location of the json file
 inmoov_json_absolute = join(whereami, "../json/inmoov_servo.json")
 
-'''
-notes
-each servo has .off() member and .initialize() member
-each structure has .off() and .initialize() members that pass the call to their servo(s)
-does .off() actually cut power, or does it drive the servo to position 0? must test!
-
-Servo.py defines a servo object, needs work but its' just fine
-    todo: add "current position" member and threading system
-all calibration & channel_id data is in inmoov_servo.json, odd storage method but no reason to change it yet
-Pwm_Interface.py inits the PWM hats, handles the locking, & defines "set_pwm()"
-    todo: rename, change to use "default/builtin" adafruit libs instead of these local things
-body.py is a top-level thing that sets up some ROS stuff
-Structures_new.py just puts all the ways of grouping servos into one file, they dont add anything except hierarchy
-
-'''
-# TODO: make better hierarchy
-# TODO: verify right wrist servo works
-
-
-# right fingers: pinky=0 thru thumb=4
-# head: y=13, x=14, jaw=15
-
-# note: shoulder_lift_out max current draw is nearly 1.2A, thats almost our entire budget for a board...
+# TODO: better comments describing the whole file and the whole package structure
 
 class Inmoov(object):
     """
@@ -49,7 +27,7 @@ class Inmoov(object):
         """
         Build all of Inmoov's parts.
         """
-        print("begin InMoov init")
+        print("begin InMoov bootup")
         
         self.all_servos = []
 
@@ -59,8 +37,11 @@ class Inmoov(object):
         with open(inmoov_json_absolute) as json_file:
             json.load(json_file,object_hook=self.parse)
             
-        self.all_servos.sort(key=lambda x: x.servo_id)
-        
+        # assert that all servos have unique ID, to prevent channel collisions
+        assert len(set([x.servo_id for x in self.all_servos])) == len(self.all_servos)
+        # assert that all servos have unique names, to prevent find_servo_by_name collisions
+        assert len(set([x.name for x in self.all_servos])) == len(self.all_servos)
+
         ####################################
         # store the actual servo objects as Inmoov member in addition to the bodypart structure hierarchy members
         # 25 total servos
@@ -129,7 +110,7 @@ class Inmoov(object):
 
         # should probably just init to "off" then explicitly call "initialize" outside this
         self.off()
-        print("done with InMoov init")
+        print("done with InMoov bootup, all servos currently off")
 
     def parse(self, obj):
         # build a Servo object out of the data read from the JSON
