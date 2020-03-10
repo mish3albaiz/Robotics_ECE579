@@ -139,7 +139,7 @@ class Inmoov(object):
         for i in self.all_servos:
             if name == i.name:
                 return i
-        print("ERR: FAIL TO FIND")
+        print("FAIL TO FIND: SERVO '%s'" % name)
         return None
 
     def set_servo_ros(self, cmd_string):
