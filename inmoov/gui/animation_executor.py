@@ -28,6 +28,8 @@ def update_poses():
 update_animations()
 update_poses()
 
+# TODO: if we are keeping the killlist idea, make it cleaner & easy to remove when transferring to a robot that doesn't need it
+
 
 def do_animation(the_inmoov, animation_name):
 

@@ -250,14 +250,14 @@ class Application(tk.Frame):
     def allservos_off(self):
         # note that off does not correspond to angle=0, so there's not much point updating the displayed sliders
         # make the actual inmoov turn off for ALL servos, not just currently active tab
-        self.on_change_callback("off")
+        self.on_change_callback("off!")
         # disable all sliders
         #for v in self.sliders:
         #	v.config(state=tk.DISABLED, length=0)
 
     def allservos_init(self):
         # make the actual inmoov run init for ALL servos, not just currently active tab
-        self.on_change_callback("init")
+        self.on_change_callback("init!")
         # enable all sliders
         for n in range(len(self.names_all[self.mode])):
             self.sliders[n].config(state=tk.NORMAL, length=slider_width)
@@ -287,18 +287,18 @@ class Application(tk.Frame):
                 # if it has changed, then update its tracked val & send it via ROS
                 self.current_values[self.mode][i] = c
                 # n = self.names_all[self.mode][i]
-                self.on_change_callback(n + "!" + str(c))
+                self.on_change_callback("servo!" + n + "!" + str(c))
                 # special corner case: moving one torso slider should also move the other!
                 if n == "left_torso":
                     v = self.names_all[self.mode].index("right_torso")
                     self.current_values[self.mode][v] = c
                     self.sliders[v].set(c)
-                    self.on_change_callback("right_torso" + "!" + str(c))
+                    self.on_change_callback("servo!right_torso" + "!" + str(c))
                 elif n == "right_torso":
                     v = self.names_all[self.mode].index("left_torso")
                     self.current_values[self.mode][v] = c
                     self.sliders[v].set(c)
-                    self.on_change_callback("left_torso" + "!" + str(c))
+                    self.on_change_callback("servo!left_torso" + "!" + str(c))
 
 
     def save_values(self):

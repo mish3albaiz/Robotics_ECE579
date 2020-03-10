@@ -10,6 +10,7 @@ import time
 from Servo import Servo
 from Structures_new import *
 from os.path import join, dirname
+import animation_executor
 
 whereami = dirname(__file__)
 # all of the config data (min angle, max angle, channel, etc) is stored in this JSON file
@@ -42,6 +43,13 @@ class Inmoov(object):
         # assert that all servos have unique names, to prevent find_servo_by_name collisions
         assert len(set([x.name for x in self.all_servos])) == len(self.all_servos)
 
+        ####################################
+        # read the animations and poses json files, only needs read once at bootup
+        # when this is running on the bot being controlled over ROS, the files will not change
+        # therefore they do not need to be read every time they are called
+        animation_executor.update_animations()
+        animation_executor.update_poses()
+        
         ####################################
         # store the actual servo objects as Inmoov member in addition to the bodypart structure hierarchy members
         # 25 total servos
@@ -145,25 +153,64 @@ class Inmoov(object):
     def set_servo_ros(self, cmd_string):
         # designed to interface with ROS, receive a string encoding the servo + position, set the relevant servo
         # this way we can run the interactive poser on a laptop or whatever
-        if cmd_string == "off":
-            self.off()
-            return
-        if cmd_string == "init":
+        # input string format:
+        # "servo!{name}!{degrees}" or
+        # "servo_thread!{name}!{degrees}!{time}" or
+        # "init!" or
+        # "off!" or
+        # "pose!{name}" or
+        # "anim!{name}"
+        splitted = cmd_string.split("!")
+        if splitted[0] == "servo":
+            dummy, name, deg = splitted
+            s = self.find_servo_by_name(name)
+            if s is None:
+                # already prints message for "fail to find servo"
+                return
+            try:
+                d = float(deg)
+            except ValueError:
+                print("fail to parse given degree", cmd_string)
+                return
+            s.rotate(d)
+        elif splitted[0] == "servo_thread":
+            dummy, name, deg, mytime = splitted
+            s = self.find_servo_by_name(name)
+            if s is None:
+                # already prints message for "fail to find servo"
+                return
+            try:
+                d = float(deg)
+            except ValueError:
+                print("fail to parse given degree", cmd_string)
+                return
+            try:
+                t = float(mytime)
+            except ValueError:
+                print("fail to parse given time", cmd_string)
+                return
+            s.rotate_thread(d, t)
+        elif splitted[0] == "init":
             self.initialize()
             return
-        # input string format: "{name}!{degrees}"
-        name, deg = cmd_string.split("!")
-        s = self.find_servo_by_name(name)
-        if s is None:
+        elif splitted[0] == "off":
+            self.off()
             return
-        try:
-            d = float(deg)
-            s.rotate(d)
-        except ValueError as ve:
-            print(ve)
-            print(cmd_string)
-            print("fail to parse given degree")
-
+        elif splitted[0] == "pose":
+            dummy, name = splitted
+            # execute the specified pose
+            animation_executor.do_pose(self, name)
+            return
+        elif splitted[0] == "anim":
+            dummy, name = splitted
+            # execute the specified animation
+            animation_executor.do_animation(self, name)
+            return
+        else:
+            print("received unsupported command type '%s'" % splitted[0])
+        return
+    
+    '''
     def do_motion(self, motion_id):
         """
         Make InMoov do one of these motions
@@ -212,6 +259,7 @@ class Inmoov(object):
         pass
     def goodbye(self):
         pass
+    '''
 
     def initialize(self):
         """ initializes all servos in InMoov, order/delays might be important """
