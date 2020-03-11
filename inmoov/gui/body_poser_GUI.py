@@ -402,6 +402,7 @@ def actually_control_inmoov(message):
 
 def launch_gui(on_change_callback):
     root = tk.Tk()
+    root.title('InMoov Pose Creation GUI')
     app = Application(root, on_change_callback)
     app.mainloop()
 
