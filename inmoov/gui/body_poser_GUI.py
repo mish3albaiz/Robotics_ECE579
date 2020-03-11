@@ -212,7 +212,8 @@ class Application(tk.Frame):
         pass
 
     def update_canvas_size(self, event):
-        print("configure canvas")
+        # not sure what this does but it is called whenever the window is resized, and its necessary
+        # print("configure canvas")
         # update scrollregion after starting 'mainloop' when all widgets are in canvas
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
 
