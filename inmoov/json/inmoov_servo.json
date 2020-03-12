@@ -2,7 +2,6 @@
     {
         "id": 38,
         "body_part": "right_pinky",
-	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 230,
@@ -16,7 +15,6 @@
     {
         "id": 37,
         "body_part": "right_ring",
-	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 445,
@@ -32,7 +30,6 @@
     {
         "id": 36,
         "body_part": "right_mid",
-	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 180,
@@ -47,7 +44,6 @@
     {
         "id": 35,
         "body_part": "right_index",
-	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 180,
@@ -61,7 +57,6 @@
     {
         "id": 5,
         "body_part": "right_thumb",
-	"disabled": true,
         "min_angle": 0,
         "max_angle": 100,
         "min_pulse": 205,
@@ -77,12 +72,11 @@
     {
         "id": 39,
         "body_part": "right_wrist",
-        "disabled": true,
         "min_angle": 0,
-        "max_angle": 0,
-        "min_pulse": 0,
-        "max_pulse": 0,
-        "default_angle": 0,
+        "max_angle": 100,
+        "min_pulse": 110,
+        "max_pulse": 530,
+        "default_angle": 10,
         "notes": [
             "TODO: Does not work needs to be looked at",
             "It was really hard to get to the write servo to look at it",
