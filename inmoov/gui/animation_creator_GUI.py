@@ -6,17 +6,8 @@ except ModuleNotFoundError:
     import tkinter as tk
     from tkinter import font as tkFont
 import json_parsing as jp
-import sys
 from os.path import join, dirname
 whereami = dirname(__file__)
-scriptsdir = join(whereami, "../scripts/")
-sys.path.append(scriptsdir)
-import Inmoov
-
-# create the INMOOV as a lazy way to parse the JSON and stuff
-# or when running locally, this actually instantiates & controls the servos
-my_inmoov = Inmoov.Inmoov()
-
 
 import time
 import animation_executor as ae
@@ -32,10 +23,8 @@ button_pady = 5
 ## TODO: possibly re-label some items to make more sense
 
 class Application(tk.Frame):
-    def __init__(self, master, do_pose_callback):
+    def __init__(self, master = None):
         tk.Frame.__init__(self, master)
-        
-        self.do_pose_callback = do_pose_callback
 
         self.animation_frame = tk.Frame(master,borderwidth=2, relief="solid")
         self.animation_frame.grid(row=1, column =0,padx = 5,pady = 5, sticky = 'wens')
@@ -229,9 +218,7 @@ class Application(tk.Frame):
     def execute_poses(self):
         for pose_id, pose_info in sorted(self.PoseDict.items()):
             print("\n********* Executing pose {} *********\n".format(str(pose_info[0])))
-            # ae.do_pose(pose_info[0], pose_info[1])
-            self.do_pose_callback("pose!" + str(pose_info[0]))
-            time.sleep(pose_info[1])
+            ae.do_pose(pose_info[0], pose_info[1])
         print("\nANIMATION COMPLETE!\n")
 
     def show_load_animation(self):
@@ -242,7 +229,7 @@ class Application(tk.Frame):
         else:
             self.ani_select.grid_remove()
             self.animation_confirm.grid_remove()
-
+            
     def edit_time_view(self):
         try:
             current_pose_selection = int(self.listbox_widget.curselection()[0]) + 1
@@ -250,22 +237,22 @@ class Application(tk.Frame):
             return
         info = self.PoseDict.get(current_pose_selection)
         self.listbox_widget.selection_clear(0, tk.END)
-        toplevel = tk.Toplevel()
-        toplevel.title("Change Pose Duration")
-        toplevel.grid_columnconfigure(0, weight=1)
-        toplevel.grid_columnconfigure(1, weight=1)
-        toplevel.grid_columnconfigure(2, weight=1)
+        self.toplevel = tk.Toplevel()
+        self.toplevel.title("Change Pose Duration")
+        self.toplevel.grid_columnconfigure(0, weight=1)
+        self.toplevel.grid_columnconfigure(1, weight=1)
+        self.toplevel.grid_columnconfigure(2, weight=1)
         string1 = "Current Time Duration for {} pose is {} second(s).".format(info[0], info[1])
-        tk.Label(toplevel, text = string1).grid(row=0, column=0, columnspan = 3)
-        tk.Label(toplevel, text = "Change to:").grid(row = 1 , column = 0)
-        time_entry = tk.Entry(toplevel)
-        time_entry.grid(row = 1, column = 1)
-        tk.Button(toplevel, text = "OK", command = lambda: self.change_time(current_pose_selection, time_entry.get())).grid(row = 1, column = 2)
-        tk.Label(toplevel, text = "Remember to close this window before changing any other time value").grid(row=2, column=0, columnspan = 3)
+        tk.Label(self.toplevel, text = string1).grid(row=0, column=0, columnspan = 3)
+        tk.Label(self.toplevel, text = "Change to:").grid(row = 1 , column = 0)
+        self.time_entry = tk.Entry(self.toplevel)
+        self.time_entry.grid(row = 1, column = 1)
+        tk.Button(self.toplevel, text = "OK", command = lambda: self.change_time(current_pose_selection, self.time_entry.get())).grid(row = 1, column = 2)
+        tk.Label(self.toplevel, text = "Remember to close this window before changing any other time value").grid(row=2, column=0, columnspan = 3)
 
     def load_animation(self):
         self.PoseDict = {}
-        i = 0
+        i = 1
         for pose_num, pose_info in sorted(self.ani_data[self.animation.get()].items()):
             self.PoseDict[i] = pose_info
             i = i + 1
@@ -281,6 +268,7 @@ class Application(tk.Frame):
 
     def change_time(self, pose_index, new_time):
         self.PoseDict[pose_index][1] = float(new_time)
+        self.toplevel.destroy()
         self.view_animation()
 
     def delete_pose(self):
@@ -313,20 +301,19 @@ class Application(tk.Frame):
             return
         info = self.PoseDict.get(current_pose_selection)
         self.listbox_widget.selection_clear(0, tk.END)
-        toplevel = tk.Toplevel()
-        toplevel.title("Change Pose Position")
-        toplevel.grid_columnconfigure(0, weight=1)
-        toplevel.grid_columnconfigure(1, weight=1)
-        toplevel.grid_columnconfigure(2, weight=1)
+        self.toplevel = tk.Toplevel()
+        self.toplevel.title("Change Pose Position")
+        self.toplevel.grid_columnconfigure(0, weight=1)
+        self.toplevel.grid_columnconfigure(1, weight=1)
+        self.toplevel.grid_columnconfigure(2, weight=1)
         string1 = "{}is currently in position {} in the animation.".format(info[0], current_pose_selection)
-        tk.Label(toplevel, text = string1).grid(row=0, column=0, columnspan = 3)
-        tk.Label(toplevel, text = "Change to:").grid(row = 1 , column = 0)
-        number_entry = tk.Entry(toplevel)
-        number_entry.grid(row = 1, column = 1)
-        tk.Button(toplevel, text = "OK", command = lambda: self.reorder_poses(int(number_entry.get()), current_pose_selection)).grid(row = 1, column = 2)
-        tk.Label(toplevel, text = "Remember to close this window before changing any other position value").grid(row=2, column=0, columnspan = 3)
+        tk.Label(self.toplevel, text = string1).grid(row=0, column=0, columnspan = 3)
+        tk.Label(self.toplevel, text = "Change to:").grid(row = 1 , column = 0)
+        self.number_entry = tk.Entry(self.toplevel)
+        self.number_entry.grid(row = 1, column = 1)
+        tk.Button(self.toplevel, text = "OK", command = lambda: self.reorder_poses(int(self.number_entry.get()), current_pose_selection)).grid(row = 1, column = 2)
+        tk.Label(self.toplevel, text = "Remember to close this window before changing any other position value").grid(row=2, column=0, columnspan = 3)
 
-    ## FINISH THIS
     def reorder_poses(self, new_position, old_position):
         new_position = new_position -1
         old_position = old_position - 1
@@ -360,21 +347,12 @@ class Application(tk.Frame):
             i = i + 1
 
         self.view_animation()
+        self.toplevel.destroy()
         
-
-def actually_control_inmoov(message):
-    # if running on the actual inmoov bot, we can use this callback to bypass ROS and directly hand off the messages
-    print(message)
-    my_inmoov.set_servo_ros(message)
-
-
-
-def launch_gui(on_change_callback):
-    root = tk.Tk()
-    root.title('InMoov Animation Creation GUI')
-    app = Application(root, on_change_callback)
-    app.mainloop()
 
 
 if __name__ == '__main__':
-    launch_gui(actually_control_inmoov)
+        root = tk.Tk()
+        root.title('InMoov Animation Creation GUI')
+        app = Application(master=root)
+        app.mainloop()
