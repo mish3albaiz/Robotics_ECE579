@@ -24,14 +24,14 @@ def callback_newfile(msg):
     # if there is a permission error, keep trying until it succeeds
     while True:
         try:
-            with io.open(write_location, "w") as my_file:
-                my_file.write(msg.data)
+            with io.open(write_location, "w", encoding="utf8") as my_file:
+                my_file.write(msg.data.decode("utf8"))
             # if it writes successfully, break
             break
-        except PermissionError as pe:
-            print(pe)
-            rospy.loginfo("permission error, retry in 10sec: " + str(pe))
-            time.sleep(10)
+        # except PermissionError as pe:
+        #     print(pe)
+        #     rospy.loginfo("permission error, retry in 10sec: " + str(pe))
+        #     time.sleep(10)
         except IOError as ioe:
             print(ioe)
             rospy.loginfo("io error, retry in 10sec: " + str(ioe))

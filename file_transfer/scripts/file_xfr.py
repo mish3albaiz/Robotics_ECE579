@@ -26,10 +26,10 @@ def send_file():
     try:
         with io.open(read_location, "r") as my_file:
             text = my_file.read()
-    except PermissionError as pe:
-        print(pe)
-        rospy.loginfo("permission error: " + str(pe))
-        return
+    # except PermissionError as pe:
+    #     print(pe)
+    #     rospy.loginfo("permission error: " + str(pe))
+    #     return
     except IOError as ioe:
         print(ioe)
         rospy.loginfo("io error: " + str(ioe))
