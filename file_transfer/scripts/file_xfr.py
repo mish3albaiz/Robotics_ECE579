@@ -82,8 +82,8 @@ def main():
     basename = op.basename(read_location).replace(" ", "_").replace(".", "_")
     
     print(read_location)
-    rospy.init_node("/file_transfer/xfr_%s" % basename, anonymous=True)
-    file_pub = rospy.Publisher("/file_transfer/%s" % basename, rosmsg.String)
+    rospy.init_node("file_transfer_xfr_%s" % basename, anonymous=True)
+    file_pub = rospy.Publisher("/file_transfer/%s" % basename, rosmsg.String, queue_size=1)
     
     # by default, do not send on launch, overridden by parameters
     if not send_on_launch:

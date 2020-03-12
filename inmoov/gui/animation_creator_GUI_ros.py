@@ -19,8 +19,8 @@ def send_with_ros(message):
     
 if __name__ == '__main__':
     try:
-        pub = rospy.Publisher('/inmoov/body/poser', rosmsg.String)
-        rospy.init_node('/inmoov/animation_gui', anonymous=True)
+        pub = rospy.Publisher('/inmoov/body/poser', rosmsg.String, queue_size=10)
+        rospy.init_node('inmoov_animation_gui', anonymous=True)
         # launch the gui but give it the callback that sends over ROS instead of locally
         animation_creator_GUI.launch_gui(send_with_ros)
     except rospy.ROSInterruptException:

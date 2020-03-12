@@ -34,7 +34,7 @@ def callback_onmessage_oneservocontrol(msg):
     
 def main():
     # logging channel?
-    rospy.init_node("/inmoov/body/bodyposer_receive", anonymous=True)
+    rospy.init_node("inmoov_body_bodyposer_receive", anonymous=True)
     rospy.on_shutdown(callback_onshutdown)
     rospy.Subscriber("/inmoov/body/poser", rosmsg.String, callback_onmessage_oneservocontrol)
     rospy.spin()

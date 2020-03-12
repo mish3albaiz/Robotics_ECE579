@@ -62,7 +62,7 @@ def main():
         return
     basename = op.basename(write_location).replace(" ", "_").replace(".", "_")
 
-    rospy.init_node("/file_transfer/rcv_%s" % basename, anonymous=True)
+    rospy.init_node("file_transfer_rcv_%s" % basename, anonymous=True)
     rospy.on_shutdown(callback_onshutdown)
     rospy.Subscriber("/file_transfer/%s" % basename, rosmsg.String, callback_newfile)
     rospy.spin()
