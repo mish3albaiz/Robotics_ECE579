@@ -4,7 +4,7 @@ import sys
 print(sys.version)
 
 import rospy
-import std_msgs.msg as rosmsg  # pretty sure this is wrogn
+import std_msgs.msg as rosmsg
 from Inmoov import Inmoov
 
 
