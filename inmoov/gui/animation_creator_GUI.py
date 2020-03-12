@@ -18,6 +18,10 @@ filename_animation = join(whereami, '../json/animations.json')
 button_padx = 5
 button_pady = 5
 
+## TODO: add some self checking measures, mostly for pop ups at this point
+## TODO: finish comments
+## TODO: possibly re-label some items to make more sense
+
 class Application(tk.Frame):
     def __init__(self, master = None):
         tk.Frame.__init__(self, master)
@@ -28,14 +32,22 @@ class Application(tk.Frame):
         self.pose_frame.grid(row = 1, column = 1,padx = 5,pady = 5,sticky = 'swne')
         self.button_frame = tk.Frame(self.animation_frame)
         self.button_frame.grid(row = 6, column =0,padx = 5, pady = 10, sticky = 'we', columnspan = 3)
+        self.pose_button_frame = tk.Frame(self.animation_frame, borderwidth=1, relief="solid")
+        self.pose_button_frame.grid(row = 7, column =0,padx = 5, pady = 10, sticky = 'we', columnspan = 3, ipadx  =5, ipady = 5)
+
+        self.on_off_load = False
 
         # dictionary to hold all the poses in the animation
         self.PoseDict = {}
         # list to hold all possible pose options
         self.OptionList = []
 
+        self.AniList = []
+
         # read and save data in pose.json file
         self.data = jp.read_json(filename_pose)
+
+        self.ani_data = jp.read_json(filename_animation)
 
         # where to start displaying pose information
         self.current_pose = 1
@@ -44,11 +56,18 @@ class Application(tk.Frame):
         for pose in self.data:
             self.OptionList.append(pose)
 
+        for animation in self.ani_data:
+            self.AniList.append(animation)
+
         # making dynamic variable to change when pose option menu changes
         self.variable = tk.StringVar(master)
 
+        self.animation = tk.StringVar(master)
+
         # setting pose option menu to initially be the first pose in the JSON file
         self.variable.set(self.OptionList[0])
+
+        self.animation.set(self.AniList[0])
 
         tk.Label(self.animation_frame, text = 'Enter Animation Name In Entry Box and Click Save Button').grid(row = 0, column = 0, columnspan = 3, sticky = 'we',padx = button_padx)
 
@@ -75,18 +94,45 @@ class Application(tk.Frame):
         self.listbox_widget = tk.Listbox(self.animation_frame)
         self.listbox_widget.grid(row = 5, columnspan = 3, sticky = 'wens', padx = 3, pady = 3)
 
-        self.reset_button = tk.Button(self.button_frame, text = 'CLEAR', command = lambda: self.clear_animation(), width = 10, bg = 'firebrick1')
-        self.reset_button.grid(row = 0, column = 0)
+        self.reset_button = tk.Button(self.button_frame, text = 'CLEAR', command = lambda: self.clear_animation(),bg = 'firebrick1')
+        self.reset_button.grid(row = 0, column = 0, sticky = 'we', padx = 8)
 
-        self.execute_button = tk.Button(self.button_frame, text = 'EXECUTE', command = lambda: self.execute_poses(), width = 10, bg = 'SpringGreen2')
-        self.execute_button.grid(row = 0, column = 1)
+        self.execute_button = tk.Button(self.button_frame, text = 'EXECUTE', command = lambda: self.execute_poses(),bg = 'SpringGreen2')
+        self.execute_button.grid(row = 0, column = 1, sticky = 'we', padx = 8)
+
+        self.load_button = tk.Button(self.button_frame, text = 'LOAD', bg = 'deep sky blue', command = lambda:self.show_load_animation())
+        self.load_button.grid(row = 0, column = 2, sticky = 'we', padx = 8)
+
+        tk.Label(self.pose_button_frame, text = 'Select a Pose from the List Above to Use Buttons Below').grid(row = 0, column = 0, columnspan = 3, sticky = 'we',padx = button_padx)
+
+        self.edit_button = tk.Button(self.pose_button_frame, text = 'EDIT TIME', bg = 'gray77', command = lambda:self.edit_time_view())
+        self.edit_button.grid(row = 1, column = 0, sticky = 'we', padx = 8)
+
+        self.position_button = tk.Button(self.pose_button_frame, text = 'EDIT ORDER', bg = 'gray77', command = lambda: self.edit_order())
+        self.position_button.grid(row = 1, column = 1, sticky = 'we', padx = 8)
+
+        self.delete_button = tk.Button(self.pose_button_frame, text = 'DELETE', bg = 'gray77', command = lambda: self.delete_pose())
+        self.delete_button.grid(row = 1, column = 2, sticky = 'we', padx = 8)
+
+        self.ani_select = tk.OptionMenu(self.button_frame, self.animation, *self.AniList, command = lambda x = self.animation.get():self.set_animation(x))
+        self.ani_select.config(bg = 'gray77')
+        self.ani_select.grid(row=1, column=0, columnspan = 3,padx = 5, sticky = 'we', pady = 10)
+        self.ani_select.grid_remove()
+
+        self.animation_confirm = tk.Button(self.button_frame, text = 'OPEN', command = lambda: self.load_animation(), width = 10, bg = 'gray77')
+        self.animation_confirm.grid(row = 1, column = 3,padx = 5, sticky = 'we', pady = 10)
+        self.animation_confirm.grid_remove()
 
         self.button_frame.grid_columnconfigure(0, weight=1)
         self.button_frame.grid_columnconfigure(1, weight=1)
+        self.button_frame.grid_columnconfigure(2, weight=1)
+        self.pose_button_frame.grid_columnconfigure(0, weight=1)
+        self.pose_button_frame.grid_columnconfigure(1, weight=1)
+        self.pose_button_frame.grid_columnconfigure(2, weight=1)
 
         tk.Label(self.pose_frame, text = 'Scroll to view selected pose values:').grid(row = 0, column = 0, sticky = 'w',padx = button_padx)
         
-        self.pose_listbox = tk.Listbox(self.pose_frame, width=40, height=20)
+        self.pose_listbox = tk.Listbox(self.pose_frame, width=40, height=26)
         self.pose_listbox.grid(row = 1,column = 0, sticky = 'nswe', padx = 5)
 
         self.view_pose(self.variable.get())
@@ -135,7 +181,7 @@ class Application(tk.Frame):
         servo_list = []
         pwm_list = []
         
-        for servo, pwm_value in pose[self.variable.get()].items():
+        for servo, pwm_value in sorted(pose[self.variable.get()].items()):
             servo_list.append(servo)
             pwm_list.append(pwm_value)
 
@@ -155,9 +201,11 @@ class Application(tk.Frame):
     def view_animation(self):
         pose_list = []
         self.listbox_widget.delete(0,tk.END)
-        for pose, pose_info in self.PoseDict.items():
-            pose_string = "Hold {} pose for {} second(s)".format(pose_info[0], pose_info[1])
+        i = 1
+        for pose, pose_info in sorted(self.PoseDict.items()):
+            pose_string = "{}. Hold {} pose for {} second(s)".format(i, pose_info[0], pose_info[1])
             pose_list.append(pose_string)
+            i = i + 1
         for entry in pose_list:
             self.listbox_widget.insert(tk.END, entry)
 
@@ -168,15 +216,142 @@ class Application(tk.Frame):
         self.view_animation()
 
     def execute_poses(self):
-        for pose_id, pose_info in self.PoseDict.items():
+        for pose_id, pose_info in sorted(self.PoseDict.items()):
             print("\n********* Executing pose {} *********\n".format(str(pose_info[0])))
             ae.do_pose(pose_info[0], pose_info[1])
         print("\nANIMATION COMPLETE!\n")
-                    
+
+    def show_load_animation(self):
+        self.on_off_load = not self.on_off_load
+        if self.on_off_load:
+            self.ani_select.grid(row=1, column=0, columnspan = 2,padx = 5, sticky = 'we', pady = (20,0))
+            self.animation_confirm.grid(row = 1, column = 2,padx = 5, sticky = 'we', pady = (20, 0))
+        else:
+            self.ani_select.grid_remove()
+            self.animation_confirm.grid_remove()
+
+    def edit_time_view(self):
+        try:
+            current_pose_selection = int(self.listbox_widget.curselection()[0]) + 1
+        except:
+            return
+        info = self.PoseDict.get(current_pose_selection)
+        self.listbox_widget.selection_clear(0, tk.END)
+        toplevel = tk.Toplevel()
+        toplevel.title("Change Pose Duration")
+        toplevel.grid_columnconfigure(0, weight=1)
+        toplevel.grid_columnconfigure(1, weight=1)
+        toplevel.grid_columnconfigure(2, weight=1)
+        string1 = "Current Time Duration for {} pose is {} second(s).".format(info[0], info[1])
+        tk.Label(toplevel, text = string1).grid(row=0, column=0, columnspan = 3)
+        tk.Label(toplevel, text = "Change to:").grid(row = 1 , column = 0)
+        time_entry = tk.Entry(toplevel)
+        time_entry.grid(row = 1, column = 1)
+        tk.Button(toplevel, text = "OK", command = lambda: self.change_time(current_pose_selection, time_entry.get())).grid(row = 1, column = 2)
+        tk.Label(toplevel, text = "Remember to close this window before changing any other time value").grid(row=2, column=0, columnspan = 3)
+
+    def load_animation(self):
+        self.PoseDict = {}
+        i = 0
+        for pose_num, pose_info in sorted(self.ani_data[self.animation.get()].items()):
+            self.PoseDict[i] = pose_info
+            i = i + 1
+        self.view_animation()
+        self.entry_save.delete(0, 'end')
+        self.entry_save.insert(0,self.animation.get())
+        self.on_off_load  = True
+        self.show_load_animation()
+
+    def set_animation(self, value):
+        index_value = self.AniList.index(value)
+        self.animation.set(self.AniList[index_value])
+
+    def change_time(self, pose_index, new_time):
+        self.PoseDict[pose_index][1] = float(new_time)
+        self.view_animation()
+
+    def delete_pose(self):
+        try:
+            current_pose_selection = int(self.listbox_widget.curselection()[0]) + 1
+        except:
+            return
+        key_list = []
+        value_list = []
+        info = self.PoseDict.get(current_pose_selection)
+        self.listbox_widget.selection_clear(0, tk.END)
+
+        for key, value in sorted(self.PoseDict.items()):
+            value_list.append(value)
+
+        del value_list[current_pose_selection-1]
+        self.PoseDict = {}
+
+        i = 1
+        for x in value_list:
+            self.PoseDict[i] = x
+            i = i+1
+            
+        self.view_animation()
+
+    def edit_order(self):
+        try:
+            current_pose_selection = int(self.listbox_widget.curselection()[0]) + 1
+        except:
+            return
+        info = self.PoseDict.get(current_pose_selection)
+        self.listbox_widget.selection_clear(0, tk.END)
+        toplevel = tk.Toplevel()
+        toplevel.title("Change Pose Position")
+        toplevel.grid_columnconfigure(0, weight=1)
+        toplevel.grid_columnconfigure(1, weight=1)
+        toplevel.grid_columnconfigure(2, weight=1)
+        string1 = "{}is currently in position {} in the animation.".format(info[0], current_pose_selection)
+        tk.Label(toplevel, text = string1).grid(row=0, column=0, columnspan = 3)
+        tk.Label(toplevel, text = "Change to:").grid(row = 1 , column = 0)
+        number_entry = tk.Entry(toplevel)
+        number_entry.grid(row = 1, column = 1)
+        tk.Button(toplevel, text = "OK", command = lambda: self.reorder_poses(int(number_entry.get()), current_pose_selection)).grid(row = 1, column = 2)
+        tk.Label(toplevel, text = "Remember to close this window before changing any other position value").grid(row=2, column=0, columnspan = 3)
+
+    ## FINISH THIS
+    def reorder_poses(self, new_position, old_position):
+        new_position = new_position -1
+        old_position = old_position - 1
+        value_list = []
+        bottom_list = []
+        top_list = []
+        save_list = []
+
+        for key, value in sorted(self.PoseDict.items()):
+            value_list.append(value)
+        
+        save_list.append(value_list[old_position])
+
+        if new_position < old_position:
+            bottom_list = value_list[:(new_position)]
+            top_list = value_list[new_position:]
+            top_list.remove(save_list[0])
+        elif new_position > old_position:
+            bottom_list = value_list[:(new_position+1)]
+            top_list = value_list[new_position+1:]
+            bottom_list.remove(save_list[0])
+        else:
+            return
+
+        value_list = bottom_list + save_list + top_list
+
+        i = 1
+        self.PoseDict = {}
+        for item in value_list:
+            self.PoseDict[i] = item
+            i = i + 1
+
+        self.view_animation()
+        
+
 
 if __name__ == '__main__':
         root = tk.Tk()
         root.title('InMoov Animation Creation GUI')
         app = Application(master=root)
         app.mainloop()
-
