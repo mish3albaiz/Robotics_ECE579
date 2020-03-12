@@ -86,8 +86,9 @@ class Servo(object):
             print("Warning: servo '%s' is disabled" % name)
         else:
             # sanity checking, in case of typos in the config json
+            assert min_angle != max_angle           # linear_map function gets fucky if range is zero
             assert min_angle < max_angle            # angle-space should never be upside-down
-            assert min_pulse != max_pulse           # linear_map function gets fucky if delta is zero
+            assert min_pulse != max_pulse           # linear_map function gets fucky if range is zero
             assert 1 <= max_pulse <= 4096           # range of possible values for pwm hat
             assert 1 <= min_pulse <= 4096           # range of possible values for pwm hat
             assert -360 <= min_angle <= 360         # range of possible angle values
