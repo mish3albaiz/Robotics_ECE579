@@ -412,7 +412,7 @@ class Application(tk.Frame):
                     if n == self.mode:
                         # if in the visible tab, update the visible slider and visible checkbox and visible label
                         self.labels[m].config(fg=self.defaultcolor_font)
-                        self.sliders[m].set(s.default_angle)
+                        self.sliders[m].set(self.current_values[n][m])
                         self.checkboxes_vars[m].set(1)
                 else:
                     # if the servo is not in the pose, then set its checkbox to unchecked
