@@ -87,7 +87,6 @@
     {
         "id": 34,
         "body_part": "right_elbow",
-	"disabled":true,
         "min_angle": 0,
         "max_angle": 90,
         "min_pulse": 275,
