@@ -325,34 +325,63 @@ class Application(tk.Frame):
         save_name = self.name_entry.get()
         if len(save_name) == 0:
             # TODO: popup!
-            print('Please enter a pose name.')
+            popup = tk.Toplevel()
+            popup.title("ERROR")
+            tk.Label(popup, text = 'Please Enter a Pose Name!').grid(row = 0, column = 0)
             return
         current_gestures = jp.read_json(save_file)
         if save_name in current_gestures:
-            print('Pose already exsists')
-            # TODO: popup! can we get a yes/no repsonse from the user?
-            return
-        for n in range(len(self.names_all)):
-            for m in range(len(self.names_all[n])):
-                if self.current_checkbox_states[n][m]: # only add it to the pose if its checkbox is checked
-                    c = self.current_values[n][m] # get current slider value
-                    gesture[self.names_all[n][m]] = c # save it into dict
-        jp.add_object_to_json(save_file, save_name, gesture)
-        self.name_entry.delete(0, 'end') # delete the text in the text-entry box
-        totalnumservos = sum([len(x) for x in self.names_all])
-        print("Pose saved as '%s', sets %d / %d servos" % (save_name, len(gesture), totalnumservos))
+            self.popup = tk.Toplevel()
+            self.popup.title("Pose Overwrite")
+            tk.Label(self.popup, text = 'Are you sure you want to overwrite existing pose?').grid(row = 0, column = 0, columnspan = 2)
+            self.yes_button = tk.Button(self.popup, text = 'YES', command = lambda x = True: self.overwrite_pose(x))
+            self.yes_button.grid(row = 1, column = 0)
+            self.no_button = tk.Button(self.popup, text = 'NO', command = lambda x = False: self.overwrite_pose(x))
+            self.no_button.grid(row = 1, column = 1)
+        else:
+            for n in range(len(self.names_all)):
+                for m in range(len(self.names_all[n])):
+                    if self.current_checkbox_states[n][m]: # only add it to the pose if its checkbox is checked
+                        c = self.current_values[n][m] # get current slider value
+                        gesture[self.names_all[n][m]] = c # save it into dict
+            jp.add_object_to_json(save_file, save_name, gesture)
+            self.name_entry.delete(0, 'end') # delete the text in the text-entry box
+            totalnumservos = sum([len(x) for x in self.names_all])
+            print("Pose saved as '%s', sets %d / %d servos" % (save_name, len(gesture), totalnumservos))
+
+    def overwrite_pose(self, option):
+        gesture = {}
+        save_name = self.name_entry.get()
+        if option:
+            for n in range(len(self.names_all)):
+                for m in range(len(self.names_all[n])):
+                    if self.current_checkbox_states[n][m]: # only add it to the pose if its checkbox is checked
+                        c = self.current_values[n][m] # get current slider value
+                        gesture[self.names_all[n][m]] = c # save it into dict
+            jp.add_object_to_json(save_file, save_name, gesture)
+            self.name_entry.delete(0, 'end') # delete the text in the text-entry box
+            totalnumservos = sum([len(x) for x in self.names_all])
+            print("Pose saved as '%s', sets %d / %d servos" % (save_name, len(gesture), totalnumservos))
+            self.popup.destroy()
+        else:
+            self.popup.destroy()
+            
             
     def load_values(self):
         # read the json, get the specified pose
         load_name = self.name_entry.get()
         if len(load_name) == 0:
             # todo popup!
-            print('Please enter a pose name.')
+            popup = tk.Toplevel()
+            popup.title("ERROR")
+            tk.Label(popup, text = 'Please Enter a Pose Name!').grid(row = 0, column = 0)
             return
         current_poses = jp.read_json(save_file)
         if load_name not in current_poses:
             # todo popup!
-            print('Specified pose does not exist.')
+            popup = tk.Toplevel()
+            popup.title("ERROR")
+            tk.Label(popup, text = 'No Pose Exists!').grid(row = 0, column = 0)
             return
         loading_pose = current_poses[load_name]
         # load/apply the pose to the GUI:
