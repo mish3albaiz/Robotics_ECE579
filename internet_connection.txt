@@ -1,0 +1,10 @@
+# this system came with a tool called "pifi" that runs on bootup and automatically
+# does some wifi stuff. you can give it a network name/password and it will usually
+# auto connect on bootup. if it doesn't have a network name/password to connect
+# to, it will boot as a wifi access point that lets other machines connect to it directly.
+# google "pifi" for more info.
+
+# currently it is set up to connect to "PSU Guest" automatically. but this network
+# requires that your time be approximately right (see timesync.txt) and then requires
+# you to accept the login page every 24 hours. open firefox and use the "Web
+# Authentication redirect" bookmark to get to the right page.

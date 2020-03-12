@@ -1,0 +1,11 @@
+# to interact with the pioneer2 bot over serial using RosAria,
+# you need to first ensure that the "radio" switch is OFF.
+# use this command to check if usb0 is connected:
+dmesg | grep ttyUSB0
+# each time you connect/disconnect the cable it should get a 
+# new timestamp in this log
+
+# we didn't explore this too much tbh.
+
+
+

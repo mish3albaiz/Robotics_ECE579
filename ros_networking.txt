@@ -1,0 +1,23 @@
+# to make ROS networking work, there's a few things you need to do.
+# first, only one "master" machine should be running roscore.
+# this OS image is currently set up to launch roscore whenever it boots, that feature
+# should be disabled on all machine but one.
+# to kill already-running roscore process:
+sudo killall roscore rosmaster
+# to stop it from launching on bootup:
+sudo systemctl disable roscore.service
+# to re-enable launching on bootup:
+sudo systemctl enable roscore.service
+
+# you also need to set up the ROS_HOSTNAME/ROS_IP and ROS_MASTER_URI 
+# variables. these are set in /home/ubuntu/ros_networking.bash
+# ROS_HOSTNAME is the preferred method but we couldn't get the DHCP name
+# resolution to work, might be an issue with the settings in this OS or might be an
+# issue with configuring the network, who knows.
+# the system need to have the correct IP address for itself, and for its master. to learn
+# the address of a machine, use:
+ifconfig
+# and look for the "inet addr" field in the paragraph labeled "wlan0"
+
+
+

@@ -1,0 +1,23 @@
+# we were unable to compile RosAria with catkin_make unless we increased the RAM
+# by adding a ton of swap memory. these commdands will create a 2gig file called
+# /swapmem and tell the system to treat it as extra RAM. 
+# after rebooting, the file will still exist but it won't be treated as extra RAM 
+# any more. but you shouldn't need all that swap mem space except for when 
+# compiling the ROS packages, which is a one-time thing.
+
+# check current memory size/state
+free -h
+# create a 2gig file called /swapfile, runs in the background
+# wait a few seconds, use "ls -lh /swapfile" to confirm it finished
+sudo fallocate -l 2G /swapfile
+# change permissions
+sudo chmod 600 /swapfile
+# identify this as a swap file
+sudo mkswap /swapfile
+# enable the use of swap memory
+sudo swapon /swapfile
+# check the state of swap memory usage
+sudo swapon -s
+# confirm that you now have loads of swap memory
+free -h
+

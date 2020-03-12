@@ -1,0 +1,19 @@
+# the system should be set up to automatically call NTP and will update the time/date
+# 10-20 minutes after successfully connecting to the internet.
+
+# however it cannot connect to the PSU Guest internet if the time is off by too much,
+# like years, and the date resets to 2016 every time the PI completely loses power.
+# it can't connect to the internet cuz the time is wrong, and it cant fix the time cuz
+# it can't connect to the internet. this might behave better on a different network
+# that doesn't have so much protections, i can't say for certain.
+
+# set the date to the correct day or else PSU Guest won't even let you in. use this to 
+# set correct day (plus or minus a few months), then connect to internet, then it 
+# will eventually sync to the correct time.
+sudo date +%Y%m%d -s "20200307"
+
+# these commdands should force the time to synchronize right away, only works 
+# if it has a working internet of course.
+sudo systemctl stop ntp
+sudo ntpd -q -g
+sudo systemctl start ntp

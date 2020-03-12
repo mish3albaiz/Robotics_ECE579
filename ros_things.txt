@@ -1,0 +1,42 @@
+# catkin is the build system used to manage ROS packages.
+# the catkin workspace is ~/catkin_ws, there is a link on the desktop to ~/catkin_ws/src
+# where all the packages should be stored. google for how to handle/make ROS 
+# catkin packages.
+
+# after copying files from a Windows machine, you will probably need
+# to run "dos2unix" on those files. this definitely needs run on any
+# python scripts you want to use as part of a ROS package. 
+
+# for toplevel or entrypoint scripts, you also need to ensure they are 
+# executable with "chmod +x asdfasdf" and also have "#!/usr/bin/env python" 
+# as their first line, or else ROS won't like them. this is not needed
+# for files that are simply imported. you also need to do this to run
+# a python script by simply double-clicking it.
+
+# to build a catkin package:
+cd ~/catkin_ws/src
+catkin_create_pkg inmoov rospy std_msgs sensor_msgs
+cd ..
+catkin_make
+source ~/catkin_ws/devel/setup.bash
+
+
+# some handy ros commands: google for more info
+rosnode list
+rosnode cleanup
+rosnode ping asdfasdf
+rostopic list
+rostopic echo asdfasdf
+rostopic -h
+rosrun rqt_graph rqt_graph
+rosrun inmoov body.py
+rosrun inmoov body_poser_GUI_ros.py
+rosrun rosaria RosAria _port:=/dev/ttyUSB0
+rosrun rosaria_client interface
+rosrun inmoov camera_capture.py
+rosrun image_view image_view image:=/inmoov/head/image _image_transport:=compressed
+
+
+
+
+
