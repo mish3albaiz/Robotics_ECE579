@@ -1,3 +1,4 @@
+# all machines connected in a ROS network need to agree on what time it is to work properly
 # the system should be set up to automatically call NTP and will update the time/date
 # 10-20 minutes after successfully connecting to the internet.
 
