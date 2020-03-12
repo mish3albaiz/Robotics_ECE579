@@ -46,7 +46,7 @@ def publish_image(image_np):
 
 def main():
     global image_pub
-    rospy.init_node('inmoov_head', anonymous=True)
+    rospy.init_node('/inmoov/head/image_capture', anonymous=True)
     image_pub = rospy.Publisher("/inmoov/head/image/compressed", CompressedImage)
     rate = rospy.Rate(2) # twice per second at most
     while not rospy.is_shutdown():

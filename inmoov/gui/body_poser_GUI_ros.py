@@ -19,7 +19,7 @@ def send_with_ros(message):
 if __name__ == '__main__':
     try:
         pub = rospy.Publisher('/inmoov/body/poser', rosmsg.String)
-        rospy.init_node('bodyposer_gui', anonymous=True)
+        rospy.init_node('/inmoov/bodyposer_gui', anonymous=True)
         body_poser_GUI.launch_gui(send_with_ros)
     except rospy.ROSInterruptException:
         print("oops")

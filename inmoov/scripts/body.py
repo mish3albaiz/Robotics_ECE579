@@ -30,15 +30,11 @@ def callback_onmessage_oneservocontrol(msg):
     # takes a string-type message
     print("message received: ", rospy.get_time(), msg.data)
     rospy.loginfo(msg.data)
-    inMoov.set_servo_ros(msg.data)
+    inMoov.inmoov_ros_command(msg.data)
     
-def callback(msg):
-    rospy.loginfo(msg.data)
-    inMoov.do_motion(msg.data)
-
 def main():
     # logging channel?
-    rospy.init_node("bodyposer_receive", anonymous=True)
+    rospy.init_node("/inmoov/body/bodyposer_receive", anonymous=True)
     rospy.on_shutdown(callback_onshutdown)
     rospy.Subscriber("/inmoov/body/poser", rosmsg.String, callback_onmessage_oneservocontrol)
     rospy.spin()

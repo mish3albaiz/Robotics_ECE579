@@ -398,7 +398,7 @@ class Application(tk.Frame):
 def actually_control_inmoov(message):
     # if running on the actual inmoov bot, we can use this callback to bypass ROS and directly hand off the messages
     print(message)
-    my_inmoov.set_servo_ros(message)
+    my_inmoov.inmoov_ros_command(message)
 
 def launch_gui(on_change_callback):
     root = tk.Tk()

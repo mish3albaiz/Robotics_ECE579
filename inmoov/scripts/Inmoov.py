@@ -153,7 +153,7 @@ class Inmoov(object):
         print("FAIL TO FIND: SERVO '%s'" % name)
         return None
 
-    def set_servo_ros(self, cmd_string):
+    def inmoov_ros_command(self, cmd_string):
         # designed to interface with ROS, receive a string encoding the servo + position, set the relevant servo
         # this way we can run the interactive poser on a laptop or whatever
         # input string format:
