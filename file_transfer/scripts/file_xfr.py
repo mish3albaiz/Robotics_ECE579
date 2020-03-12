@@ -2,6 +2,7 @@
 
 import os.path as op
 import io
+import sys
 import rospy
 import std_msgs.msg as rosmsg
 
@@ -34,7 +35,9 @@ def send_file():
         rospy.loginfo("io error: " + str(ioe))
         return
     # "text" is now a string containing the full text of the file
-    rospy.loginfo("sending new file: ", rospy.get_time(), len(text))
+    printme = "sending new file: ", rospy.get_time(), len(text)
+    print(printme)
+    rospy.loginfo(printme)
     file_pub.publish(text)
 
 
@@ -45,25 +48,40 @@ def main():
     global file_last_changed_time
     
     # how do i get command-line options into a ros node?
-    input_name = "a/b/c/d/"
+    input_name = None
     try:
         input_name = rospy.get_param('~file')
+        # THIS SHOULD WORK, WHY DOESNT THIS WORK!?
     except KeyError:
-        print("err: no file specified")
-        return
+        # fallback method: sys.argv
+        for a in sys.argv:
+            if a.startswith("_file:="):
+                input_name = a.replace("_file:=", "")
+        if input_name is None:
+            print("err: no file specified")
+            return
     
+    send_on_launch = None
     try:
         send_on_launch = bool(rospy.get_param('~bootsend'))
+        # THIS SHOULD WORK, WHY DOESNT THIS WORK!?
     except KeyError:
-        send_on_launch = False
+        for a in sys.argv:
+            if a.startswith("_bootsend:="):
+                send_on_launch = bool(a.replace("_bootsend:=", ""))
+        if send_on_launch is None:
+            send_on_launch = False
 
     # node/topic name depends on basename of file it is monitoring
     read_location = op.abspath(op.realpath(op.normpath(input_name)))
     if not op.isfile(read_location):
-        rospy.loginfo("input path '%s' clean path '%s' is not a file or does not exist!" % (input_name, read_location))
+        printme = "input path '%s' clean path '%s' is not a file or does not exist!" % (input_name, read_location)
+        print(printme)
+        rospy.loginfo(printme)
         return
     basename = op.basename(read_location).replace(" ", "_").replace(".", "_")
     
+    print(read_location)
     rospy.init_node("/file_transfer/xfr_%s" % basename, anonymous=True)
     file_pub = rospy.Publisher("/file_transfer/%s" % basename, rosmsg.String)
     
