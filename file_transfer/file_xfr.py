@@ -37,13 +37,27 @@ def send_file():
     rospy.loginfo("sending new file: ", rospy.get_time(), len(text))
     file_pub.publish(text)
 
+
+# usage: rosrun file_transfer file_xfr.py _file:=./whatever.txt
 def main():
     global file_pub
     global read_location
     global file_last_changed_time
+    
     # how do i get command-line options into a ros node?
-    # node/topic name depends on basename of file it is monitoring
     input_name = "a/b/c/d/"
+    try:
+        input_name = rospy.get_param('~file')
+    except KeyError:
+        print("err: no file specified")
+        return
+    
+    try:
+        send_on_launch = bool(rospy.get_param('~bootsend'))
+    except KeyError:
+        send_on_launch = False
+
+    # node/topic name depends on basename of file it is monitoring
     read_location = op.abspath(op.realpath(op.normpath(input_name)))
     if not op.isfile(read_location):
         rospy.loginfo("input path '%s' clean path '%s' is not a file or does not exist!" % (input_name, read_location))
@@ -54,7 +68,6 @@ def main():
     file_pub = rospy.Publisher("/file_transfer/%s" % basename, rosmsg.String)
     
     # by default, do not send on launch, overridden by parameters
-    send_on_launch = False
     if not send_on_launch:
         file_last_changed_time = op.getmtime(read_location)
     

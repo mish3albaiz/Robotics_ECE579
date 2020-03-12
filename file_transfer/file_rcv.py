@@ -34,12 +34,17 @@ def callback_newfile(msg):
             rospy.loginfo("io error, retry in 10sec: " + str(ioe))
             time.sleep(10)
 
-    
+# usage: rosrun file_transfer file_rcv.py _file:=./whatever.txt
 def main():
     global write_location
     # how do i get command-line options into a ros node?
-    # node/topic name depends on basename of file it is monitoring
     input_name = "a/b/c/d/"
+    try:
+        input_name = rospy.get_param('~file')
+    except KeyError:
+        print("err: no file specified")
+        return
+    # node/topic name depends on basename of file it is monitoring
     write_location = op.abspath(op.realpath(op.normpath(input_name)))
     if not op.isfile(write_location):
         rospy.loginfo("input path '%s' clean path '%s' is not a file or does not exist!" % (input_name, write_location))
