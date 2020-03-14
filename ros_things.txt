@@ -35,8 +35,8 @@ rosrun rosaria RosAria _port:=/dev/ttyUSB0
 rosrun rosaria_client interface
 rosrun inmoov camera_capture.py
 rosrun image_view image_view image:=/inmoov/head/image _image_transport:=compressed
-
-
+rosrun file_transfer file_rcv.py _file:=./whatever.txt
+rosrun file_transfer file_xfr.py _file:=./whatever.txt
 
 
 
