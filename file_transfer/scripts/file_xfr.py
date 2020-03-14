@@ -47,7 +47,9 @@ def main():
     global read_location
     global file_last_changed_time
     
+    rospy.init_node("file_transfer_xfr", anonymous=True)
     # how do i get command-line options into a ros node?
+    # NOTE: command-line options must be got AFTER initializing the node! probably, anyway
     input_name = None
     try:
         input_name = rospy.get_param('~file')
@@ -56,6 +58,7 @@ def main():
         # fallback method: sys.argv
         for a in sys.argv:
             if a.startswith("_file:="):
+                print("fallback argv")
                 input_name = a.replace("_file:=", "")
         if input_name is None:
             print("err: no file specified")
@@ -68,11 +71,12 @@ def main():
     except KeyError:
         for a in sys.argv:
             if a.startswith("_bootsend:="):
+                print("fallback argv")
                 send_on_launch = bool(a.replace("_bootsend:=", ""))
         if send_on_launch is None:
             send_on_launch = False
 
-    # node/topic name depends on basename of file it is monitoring
+    # topic name depends on basename of file it is monitoring
     read_location = op.abspath(op.realpath(op.normpath(input_name)))
     if not op.isfile(read_location):
         printme = "input path '%s' clean path '%s' is not a file or does not exist!" % (input_name, read_location)
@@ -81,8 +85,7 @@ def main():
         return
     basename = op.basename(read_location).replace(" ", "_").replace(".", "_")
     
-    print(read_location)
-    rospy.init_node("file_transfer_xfr_%s" % basename, anonymous=True)
+    print("monitoring file:", read_location)
     file_pub = rospy.Publisher("/file_transfer/%s" % basename, rosmsg.String, queue_size=1)
     
     # by default, do not send on launch, overridden by parameters

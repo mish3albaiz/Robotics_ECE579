@@ -40,6 +40,8 @@ def callback_newfile(msg):
 # usage: rosrun file_transfer file_rcv.py _file:=./whatever.txt
 def main():
     global write_location
+ 
+    rospy.init_node("file_transfer_rcv", anonymous=True)
     # how do i get command-line options into a ros node?
     input_name = None
     try:
@@ -49,6 +51,7 @@ def main():
         # fallback method: sys.argv
         for a in sys.argv:
             if a.startswith("_file:="):
+                print("fallback argv")
                 input_name = a.replace("_file:=", "")
         if input_name is None:
             print("err: no file specified")
@@ -62,7 +65,7 @@ def main():
         return
     basename = op.basename(write_location).replace(" ", "_").replace(".", "_")
 
-    rospy.init_node("file_transfer_rcv_%s" % basename, anonymous=True)
+    print("monitoring file:", write_location)
     rospy.on_shutdown(callback_onshutdown)
     rospy.Subscriber("/file_transfer/%s" % basename, rosmsg.String, callback_newfile)
     rospy.spin()
