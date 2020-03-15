@@ -1,8 +1,7 @@
 
 """
 Authors:
-    Brett Creeley
-    Matty Baba Allos
+    Brian Henson
 """
 from Pwm_Interface import set_pwm
 import threading

@@ -2,8 +2,7 @@
 This module holds the global pwm variable and any utility functions
 
 Authors:
-    Brett Creeley
-    Matty Baba Allos
+    Brian Henson
 """
 import threading
 

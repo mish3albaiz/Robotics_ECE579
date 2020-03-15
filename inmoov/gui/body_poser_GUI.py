@@ -324,7 +324,6 @@ class Application(tk.Frame):
         gesture = {}
         save_name = self.name_entry.get()
         if len(save_name) == 0:
-            # TODO: popup!
             popup = tk.Toplevel()
             popup.title("ERROR")
             tk.Label(popup, text = 'Please Enter a Pose Name!').grid(row = 0, column = 0)
@@ -371,14 +370,12 @@ class Application(tk.Frame):
         # read the json, get the specified pose
         load_name = self.name_entry.get()
         if len(load_name) == 0:
-            # todo popup!
             popup = tk.Toplevel()
             popup.title("ERROR")
             tk.Label(popup, text = 'Please Enter a Pose Name!').grid(row = 0, column = 0)
             return
         current_poses = jp.read_json(save_file)
         if load_name not in current_poses:
-            # todo popup!
             popup = tk.Toplevel()
             popup.title("ERROR")
             tk.Label(popup, text = 'No Pose Exists!').grid(row = 0, column = 0)

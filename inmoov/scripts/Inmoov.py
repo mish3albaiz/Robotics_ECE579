@@ -2,8 +2,7 @@
 This module are Inmoov!
 
 Authors:
-    Brett Creeley
-    Matty Baba Allos
+    Brian Henson
 """
 import json
 import time
@@ -12,8 +11,8 @@ from Structures_new import *
 import sys
 from os.path import join, dirname
 whereami = dirname(__file__)
-guidir = join(whereami, "../gui/")
-sys.path.append(guidir)
+# guidir = join(whereami, "../gui/")
+# sys.path.append(guidir)
 import animation_executor
 
 # all of the config data (min angle, max angle, channel, etc) is stored in this JSON file
