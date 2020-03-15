@@ -97,8 +97,6 @@ class Application(tk.Frame):
                 onoff.append(int(not s.disabled))
             self.current_checkbox_states.append(boxes)
             self.current_onoff_states.append(onoff)
-
-        print(self.current_checkbox_states)
         
         # applying an "empty pose" doesn't change any sliders, but it unchecks all checkboxes
         self.pose_off = {}
