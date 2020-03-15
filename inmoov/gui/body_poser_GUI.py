@@ -94,7 +94,7 @@ class Application(tk.Frame):
                 s = my_inmoov.find_servo_by_name(n)
                 self.pose_init[n] = s.default_angle
                 boxes.append(int(not s.disabled))
-                onoff.append(int(not s.disabled))
+                onoff.append(0)
             self.current_checkbox_states.append(boxes)
             self.current_onoff_states.append(onoff)
         
