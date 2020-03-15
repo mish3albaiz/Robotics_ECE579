@@ -43,6 +43,7 @@ class Servo(object):
         max_angle: The maximum degree the Servo can rotate to
         default_angle: The rest(initial)position of the servo.
         name: The name of the servo
+        disabled: True if the servo is disabled. Any attempts to move the servo will return without having any effect.
         
         framethread: handle for the background thread to manage gradual movement
         state_flag_running: Event object to indicate the gradual movement is occurring
