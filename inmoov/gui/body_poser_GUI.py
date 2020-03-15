@@ -36,6 +36,33 @@ save_file = join(whereami, '../json/pose.json')
 # or when running locally, this actually instantiates & controls the servos
 my_inmoov = Inmoov.Inmoov()
 
+# these are the names of servos to put in the left/center/right tab
+names_all =      [["left_wrist",
+                   "left_pinky",
+                   "left_ring",
+                   "left_mid",
+                   "left_index",
+                   "left_thumb",
+                   "left_elbow",
+                   "left_shoulder_lift_out",
+                   "left_shoulder_lift_front",
+                   "left_arm_rotate"],
+                  ["head_x",
+                   "head_y",
+                   "jaw",
+                   "left_torso",
+                   "right_torso"],
+                  ["right_wrist",
+                   "right_pinky",
+                   "right_ring",
+                   "right_mid",
+                   "right_index",
+                   "right_thumb",
+                   "right_elbow",
+                   "right_shoulder_lift_out",
+                   "right_shoulder_lift_front",
+                   "right_arm_rotate"]]
+
 
 class Application(tk.Frame):
     def __init__(self, master, on_change_callback):
@@ -47,46 +74,20 @@ class Application(tk.Frame):
 
         self.mode = 0	# mode 0=left, 1=center, 2=right
 
-        self.names_all = [["left_wrist",
-                           "left_pinky",
-                           "left_ring",
-                           "left_mid",
-                           "left_index",
-                           "left_thumb",
-                           "left_elbow",
-                           "left_shoulder_lift_out",
-                           "left_shoulder_lift_front",
-                           "left_arm_rotate"],
-                          ["head_x",
-                           "head_y",
-                           "jaw",
-                           "left_torso",
-                           "right_torso"],
-                          ["right_wrist",
-                            "right_pinky",
-                            "right_ring",
-                            "right_mid",
-                            "right_index",
-                            "right_thumb",
-                            "right_elbow",
-                            "right_shoulder_lift_out",
-                            "right_shoulder_lift_front",
-                            "right_arm_rotate"]]
-
         self.maxtablistlength = 0     # the most servos in a tab
-        for namelist in self.names_all:
+        for namelist in names_all:
             self.maxtablistlength = max(self.maxtablistlength, len(namelist))
-        # current_values is initiallized with all zeros, in the same shape as self.names_all
+        # current_values is initiallized with all zeros, in the same shape as names_all
         # used to determine which changed when something changed, also to know what to display when loading a tab
         self.current_values = []
-        for p in self.names_all:
+        for p in names_all:
             self.current_values.append([0] * len(p))
         # current_checkbox_states is same as current_values but for the checkboxes_vars
         # disabled servos begin with this checkbox off
         self.pose_init = {}
         self.current_checkbox_states = []
         self.current_onoff_states = []
-        for p in self.names_all:
+        for p in names_all:
             boxes = []
             onoff = []
             for n in p:
@@ -233,9 +234,9 @@ class Application(tk.Frame):
 
         self.mode = newmode
         n = 0
-        for n in range(len(self.names_all[self.mode])):
+        for n in range(len(names_all[self.mode])):
             # overwrite labels
-            name = self.names_all[self.mode][n]
+            name = names_all[self.mode][n]
             s = my_inmoov.find_servo_by_name(name)
             self.labels[n].config(text=name)
             # sete text color depending on on/off state
@@ -277,7 +278,7 @@ class Application(tk.Frame):
         for l in self.labels:
             l.config(fg="red")
         self.current_onoff_states = []
-        for p in self.names_all:
+        for p in names_all:
             self.current_onoff_states.append([0] * len(p))
 
 
@@ -289,7 +290,7 @@ class Application(tk.Frame):
         self.apply_pose_to_gui(self.pose_init)
     
     def get_changed_checkbox(self):
-        for i, n in enumerate(self.names_all[self.mode]):
+        for i, n in enumerate(names_all[self.mode]):
             c = self.checkboxes_vars[i].get()
             if c != self.current_checkbox_states[self.mode][i]:
                 # if it has changed, then update its tracked val
@@ -297,7 +298,7 @@ class Application(tk.Frame):
         print(self.current_checkbox_states)
 
     def get_changed_sliders(self, x):
-        for i, n in enumerate(self.names_all[self.mode]):
+        for i, n in enumerate(names_all[self.mode]):
             c = self.sliders[i].get()
             if c != self.current_values[self.mode][i]:
                 # if it has changed, then update its tracked val & send it via ROS
@@ -308,12 +309,12 @@ class Application(tk.Frame):
                 self.labels[i].config(fg=self.defaultcolor_font)
                 # special corner case: moving one torso slider should also move the other!
                 if n == "left_torso":
-                    v = self.names_all[self.mode].index("right_torso")
+                    v = names_all[self.mode].index("right_torso")
                     self.current_values[self.mode][v] = c
                     self.sliders[v].set(c)
                     self.on_change_callback("servo!right_torso" + "!" + str(c))
                 elif n == "right_torso":
-                    v = self.names_all[self.mode].index("left_torso")
+                    v = names_all[self.mode].index("left_torso")
                     self.current_values[self.mode][v] = c
                     self.sliders[v].set(c)
                     self.on_change_callback("servo!left_torso" + "!" + str(c))
@@ -338,28 +339,28 @@ class Application(tk.Frame):
             self.no_button = tk.Button(self.popup, text = 'NO', command = lambda x = False: self.overwrite_pose(x))
             self.no_button.grid(row = 1, column = 1)
         else:
-            for n in range(len(self.names_all)):
-                for m in range(len(self.names_all[n])):
+            for n in range(len(names_all)):
+                for m in range(len(names_all[n])):
                     if self.current_checkbox_states[n][m]: # only add it to the pose if its checkbox is checked
                         c = self.current_values[n][m] # get current slider value
-                        gesture[self.names_all[n][m]] = c # save it into dict
+                        gesture[names_all[n][m]] = c # save it into dict
             jp.add_object_to_json(save_file, save_name, gesture)
             self.name_entry.delete(0, 'end') # delete the text in the text-entry box
-            totalnumservos = sum([len(x) for x in self.names_all])
+            totalnumservos = sum([len(x) for x in names_all])
             print("Pose saved as '%s', sets %d / %d servos" % (save_name, len(gesture), totalnumservos))
 
     def overwrite_pose(self, option):
         gesture = {}
         save_name = self.name_entry.get()
         if option:
-            for n in range(len(self.names_all)):
-                for m in range(len(self.names_all[n])):
+            for n in range(len(names_all)):
+                for m in range(len(names_all[n])):
                     if self.current_checkbox_states[n][m]: # only add it to the pose if its checkbox is checked
                         c = self.current_values[n][m] # get current slider value
-                        gesture[self.names_all[n][m]] = c # save it into dict
+                        gesture[names_all[n][m]] = c # save it into dict
             jp.add_object_to_json(save_file, save_name, gesture)
             self.name_entry.delete(0, 'end') # delete the text in the text-entry box
-            totalnumservos = sum([len(x) for x in self.names_all])
+            totalnumservos = sum([len(x) for x in names_all])
             print("Pose saved as '%s', sets %d / %d servos" % (save_name, len(gesture), totalnumservos))
             self.popup.destroy()
         else:
@@ -393,19 +394,19 @@ class Application(tk.Frame):
         # firstly, ignore all disabled servos. don't touch their sliders or checkboxes.
         # second, if a servo IS in the pose, then update its slider and set its checkbox=set.
         # third, if a servo IS NOT in the pose, then set it checkbox=unset.
-        for n in range(len(self.names_all)):
-            for m in range(len(self.names_all[n])):
-                s = my_inmoov.find_servo_by_name(self.names_all[n][m])
+        for n in range(len(names_all)):
+            for m in range(len(names_all[n])):
+                s = my_inmoov.find_servo_by_name(names_all[n][m])
                 if s.disabled:
                     # dont change disabled servos at all, whether in background or active tab
                     continue
-                if self.names_all[n][m] in dictpose:
+                if names_all[n][m] in dictpose:
                     # if this servo is in the pose, then set its checkbox to checked
                     self.current_checkbox_states[n][m] = 1
                     # if this servo is in the pose, then set its text color to black
                     self.current_onoff_states[n][m] = 1
                     # if this servo is in the pose, then update its slider to match the value in it
-                    self.current_values[n][m] = dictpose[self.names_all[n][m]]
+                    self.current_values[n][m] = dictpose[names_all[n][m]]
                     if n == self.mode:
                         # if in the visible tab, update the visible slider and visible checkbox and visible label
                         self.labels[m].config(fg=self.defaultcolor_font)
