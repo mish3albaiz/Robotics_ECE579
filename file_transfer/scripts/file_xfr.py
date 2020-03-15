@@ -93,7 +93,6 @@ def main():
         file_last_changed_time = op.getmtime(read_location)
     
     rate = rospy.Rate(1.0/30.0) # once per 30 seconds at most
-    # will always send once on bootup
     while not rospy.is_shutdown():
         if file_has_changed():
             send_file()
