@@ -5,20 +5,19 @@ try:
 except ModuleNotFoundError:
     import tkinter as tk
     from tkinter import font as tkFont
-import json_parsing as jp
 import sys
 from os.path import join, dirname
 whereami = dirname(__file__)
 scriptsdir = join(whereami, "../scripts/")
 sys.path.append(scriptsdir)
 import Inmoov
+import json_parsing as jp
 
 # create the INMOOV as a lazy way to parse the JSON and stuff
 # or when running locally, this actually instantiates & controls the servos
 my_inmoov = Inmoov.Inmoov()
 
 import time
-import animation_executor as ae
 
 filename_pose = join(whereami, '../json/pose.json')
 filename_animation = join(whereami, '../json/animations.json')

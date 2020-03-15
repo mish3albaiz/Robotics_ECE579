@@ -1,11 +1,11 @@
 
-from json_parsing import read_json
 import time
 from os.path import join, dirname
 import sys
 whereami = dirname(__file__)
 scripts_dir= join(whereami, "../scripts/")
 sys.path.append(scripts_dir)
+from json_parsing import read_json
 import Inmoov
 
 filename_pose = join(whereami, '../json/pose.json')
@@ -25,14 +25,13 @@ def update_poses():
     global global_poses
     global_poses = read_json(filename_pose)
 
-update_animations()
-update_poses()
 
 # TODO: if we are keeping the killlist idea, make it cleaner & easy to remove when transferring to a robot that doesn't need it
+# TODO: be more intelligent about when we need to read the animation/pose json files
 
 
 def do_animation(the_inmoov, animation_name):
-
+    update_animations()
     print("Executing animation ", str(animation_name))
 
     if animation_name not in global_animations:
@@ -57,6 +56,7 @@ killlist = ["left_shoulder_lift_front","left_arm_rotate","right_arm_rotate","rig
 
 def do_pose(the_inmoov, pose_name, hold_time=0):
     killtime = 1
+    update_poses()
     if pose_name not in global_poses:
         print("FAIL TO FIND: POSE '%s'" % str(pose_name))
         return
@@ -73,8 +73,8 @@ def do_pose(the_inmoov, pose_name, hold_time=0):
             print('Setting {} servo to an angle of {}'.format(servo_name, servo_angle))
 #            if servo_name == 'right_lift_front':
 #                killtime = abs((7.5/90)*(fservo.curr_angle - servo_angle))
-
-    print('\n--------------- Hold for {} second(s) ---------------'.format(hold_time))
+    if hold_time != 0:
+        print('\n--------------- Hold for {} second(s) ---------------'.format(hold_time))
 
 #    # todo: handle corner case where hold_time < killtime
 #    time.sleep(killtime)
